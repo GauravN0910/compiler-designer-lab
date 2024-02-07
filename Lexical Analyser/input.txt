@@ -1,0 +1,9 @@
+number main(){
+    yeHaiBhai number y = 5.
+    jabTakBhai(x<=10){
+        x=x+1.
+    }
+    bolBhai("The Value of x is:", &x).
+    return 0.   
+    $
+}
