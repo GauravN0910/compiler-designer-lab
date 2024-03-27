@@ -1,16 +1,17 @@
-number main(){
+number start(){
     remember number y = 5;
     remember decimal x = 10.7;
     checkif (x > y) {
         tellme("x is greater than y");
     }
     otherwise {
-        tellme("y is greater than x");
+        tellme("y is greater than x")
     }
     checktill (x >= 0) {
         tellme(x);
         x = x - 1;
     }
+    take("input text",&y);
     remember number z = 3 exp 4;
     return 0;
 }

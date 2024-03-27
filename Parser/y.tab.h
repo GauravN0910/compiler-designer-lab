@@ -85,7 +85,8 @@ extern int yydebug;
     FLOAT_NUM = 286,               /* FLOAT_NUM  */
     ID = 287,                      /* ID  */
     STR = 288,                     /* STR  */
-    CHARACTER = 289                /* CHARACTER  */
+    CHARACTER = 289,               /* CHARACTER  */
+    MAIN = 290                     /* MAIN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -126,6 +127,7 @@ extern int yydebug;
 #define ID 287
 #define STR 288
 #define CHARACTER 289
+#define MAIN 290
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -138,7 +140,7 @@ union YYSTYPE
 		struct node* nd;
 	} nd_obj; 
 
-#line 142 "y.tab.h"
+#line 144 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

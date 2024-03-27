@@ -12,6 +12,7 @@ digit             [0-9]
 
 "tellme"       { strcpy(yylval.nd_obj.name,(yytext)); return PRINTFF; }
 "take"         { strcpy(yylval.nd_obj.name,(yytext)); return SCANFF; }
+"start"        { strcpy(yylval.nd_obj.name,(yytext)); return MAIN;}
 
 "checkif"      { strcpy(yylval.nd_obj.name,(yytext)); return IF; }
 "otherwise"    { strcpy(yylval.nd_obj.name,(yytext)); return ELSE; }
