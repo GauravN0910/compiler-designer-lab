@@ -1,5 +1,5 @@
 %{    
-    int line_no = 0;
+    int line_no = 1;
     #include "y.tab.h"
 %}
 

@@ -551,7 +551,7 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "toylanglex.l"
 #line 2 "toylanglex.l"
-    int line_no = 0;
+    int line_no = 1;
     #include "y.tab.h"
 #line 557 "lex.yy.c"
 #define YY_NO_INPUT 1
