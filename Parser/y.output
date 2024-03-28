@@ -260,7 +260,7 @@ Nonterminals, with rules where they appear
     valcharbool <nd_obj2> (74)
         on left: 61 62
         on right: 18 23 66
-    bools <nd_obj> (75)
+    bools <nd_obj2> (75)
         on left: 63 64
         on right: 59
     return <nd_obj> (76)

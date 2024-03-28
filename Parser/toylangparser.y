@@ -59,8 +59,8 @@
 }
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
-%type <nd_obj> program entry datatype body block else condition statement exponent mulops addops relop bools return printparam
-%type <nd_obj2> init value expression term factor base charbool valcharbool
+%type <nd_obj> program entry datatype body block else condition statement exponent mulops addops relop return printparam
+%type <nd_obj2> init value expression term factor base charbool valcharbool bools
 %define parse.error verbose
 %%
 
@@ -120,7 +120,7 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
     } 
 | ID { check_declaration($1.name); } '=' expression {
         char *id_type = get_type($1.name);
-        if(strcmp(id_type,$4.type)){
+        if(id_type!=NULL && strcmp(id_type,$4.type)){
             success=0;
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $1.name);
             sem_errors++;
@@ -198,28 +198,29 @@ relop: LT
 ;
 
 value: NUMBER { 
+        strcpy(type, "number");
         add('C'); 
         strcpy($$.name, $1.name);
         strcpy($$.type, "number");
         $$.nd = mknode(NULL, NULL, $1.name);
     }
 | FLOAT_NUM { 
+    strcpy(type, "decimal");
     add('C');
     strcpy($$.name, $1.name);
     strcpy($$.type, "decimal"); 
     $$.nd = mknode(NULL, NULL, $1.name); 
     }
 | ID {
+    check_declaration($1.name);
     strcpy($$.name, $1.name);
     char *id_type = get_type($1.name);
-    // printf("%s\n", id_type);
-    check_declaration($1.name);
     strcpy($$.type,id_type); 
     $$.nd = mknode(NULL, NULL, $1.name); 
     }
 ;
 
-charbool: bools { $$.nd = $1.nd; strcpy($$.type,"boolean"); }
+charbool: bools { $$.nd = $1.nd; strcpy($$.type,"boolean");  }
 | CHARACTER { add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"letter"); }
 ;
 
@@ -227,8 +228,8 @@ valcharbool: value { $$.nd = $1.nd; strcpy($$.type,$1.type); }
 | charbool { $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,$1.type); }
 ;
 
-bools: TRUE { add('C'); $$.nd = mknode(NULL, NULL, $1.name); }
-| FALSE { add('C'); $$.nd = mknode(NULL, NULL, $1.name); }
+bools: TRUE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"boolean");}
+| FALSE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"boolean");}
 ;
 
 return: RETURN {add('K');} valcharbool ';' { check_return_type($3.type);  $$.nd = mknode($3.nd,NULL,$1.name); }
@@ -304,6 +305,7 @@ char *get_type(char *var){
 			return symbol_table[i].data_type;
 		}
 	}
+    return NULL;
 }
 
 int search(char *type) { 

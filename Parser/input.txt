@@ -1,5 +1,5 @@
-number main(){
-    remember number y = 5.8;
+boolean main(){
+    remember number y = 5;
     remember decimal x = 10.7;
     checkif (x > 5.0) {
         tellme("x is greater than y");
@@ -9,9 +9,8 @@ number main(){
     }
     checktill (x >= 0.5) {
         tellme(x);
-        x = x - 1;
     }
     take("Enter a number: ", &y);
     remember number z = 3 exp 4;
-    return 0;
+    return wrong;
 }
