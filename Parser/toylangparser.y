@@ -154,8 +154,7 @@ term : term mulops factor {
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
         sem_errors++;
     } 
-    strcpy($$.type,$1.type);Term: number decimal *
-
+    strcpy($$.type,$1.type);
     $$.nd = mknode($1.nd, $3.nd, $2.name); 
     } 
 | factor { $$.nd = $1.nd; strcpy($$.type,$1.type); }
@@ -213,8 +212,9 @@ value: NUMBER {
 | ID {
     strcpy($$.name, $1.name);
     char *id_type = get_type($1.name);
+    // printf("%s\n", id_type);
     check_declaration($1.name);
-    sprintf($$.type,id_type); 
+    strcpy($$.type,id_type); 
     $$.nd = mknode(NULL, NULL, $1.name); 
     }
 ;

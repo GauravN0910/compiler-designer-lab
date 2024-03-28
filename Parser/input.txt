@@ -1,6 +1,6 @@
 number main(){
-    remember number y = 5 * 4.2;
-    remember decimal x = 10.7 * 2.0;
+    remember number y = 5.8;
+    remember decimal x = 10.7;
     checkif (x > 5.0) {
         tellme("x is greater than y");
     }
