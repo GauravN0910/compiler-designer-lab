@@ -140,35 +140,42 @@ expression : expression addops term {
     if(strcmp($1.type,$3.type)){
         success=0;
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
+        sem_errors++;
     }
+    strcpy($$.type,$1.type);
     $$.nd = mknode($1.nd, $3.nd, $2.name);
     } 
-| term { $$.nd = $1.nd; }
+| term { $$.nd = $1.nd; strcpy($$.type,$1.type); }
 ;
 
 term : term mulops factor {
     if(strcmp($1.type,$3.type)){
         success=0;
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
+        sem_errors++;
     } 
+    strcpy($$.type,$1.type);Term: number decimal *
+
     $$.nd = mknode($1.nd, $3.nd, $2.name); 
     } 
-| factor { $$.nd = $1.nd; }
+| factor { $$.nd = $1.nd; strcpy($$.type,$1.type); }
 ; 
 
 factor : base exponent base {
     if(strcmp($1.type,$3.type)){
         success=0;
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
+        sem_errors++;
     }
+    strcpy($$.type,$1.type);
     $$.nd = mknode($1.nd, $3.nd, $2.name); 
     } 
-| LOG '(' value ',' value ')' { $$.nd = mknode($3.nd, $5.nd, $1.name); }
-| base { $$.nd = $1.nd; }
+| LOG '(' value ',' value ')' { $$.nd = mknode($3.nd, $5.nd, $1.name);  }
+| base { $$.nd = $1.nd; strcpy($$.type,$1.type); }
 ;
 
-base : value { $$.nd = $1.nd; }
-| '(' expression ')' { $$.nd = $2.nd; }
+base : value { $$.nd = $1.nd; strcpy($$.type,$1.type); }
+| '(' expression ')' { $$.nd = $2.nd; strcpy($$.type,$2.type); }
 ;
 
 
