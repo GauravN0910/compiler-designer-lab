@@ -59,8 +59,8 @@
 }
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
-%type <nd_obj> program entry datatype body block else condition statement exponent mulops addops relop return printparam
-%type <nd_obj2> init value expression term factor base charbool valcharbool bools
+%type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam
+%type <nd_obj2> init value expression term factor base charbool valcharbool bools condition
 %define parse.error verbose
 %%
 
@@ -85,10 +85,10 @@ block: WHILE {add('K');} '(' condition ')' '{' body '}' { $$.nd = mknode($4.nd, 
 | IF {add('K');} '(' condition ')' '{' body '}' else { struct node *iff = mknode($4.nd, $7.nd, $1.name); $$.nd = mknode(iff, $9.nd, "if-else-block"); }
 | statement ';' { $$.nd = $1.nd; }
 | PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name); }
-| SCANFF {add('K');} '(' STR ',' '&' ID ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name); struct node* n2 = mknode(NULL,NULL,$7.name); $$.nd = mknode(n1,n2,$1.name); }
+| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name); struct node* n2 = mknode(NULL,NULL,$7.name); $$.nd = mknode(n1,n2,$1.name); }
 ;
 
-printparam: valcharbool { $$.nd = $1.nd; }
+printparam: valcharbool { $$.nd = $1.nd; }  
 | STR { $$.nd = mknode(NULL, NULL, $1.name); }
 
 else: ELSE {add('K');} '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name); }
@@ -101,13 +101,14 @@ condition: valcharbool relop valcharbool {
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
         sem_errors++;
     }
+    strcpy($$.type,"boolean");
     $$.nd = mknode($1.nd, $3.nd, $2.name);  
     }
-| TRUE {add('K');} { $$.nd = NULL; }
-| FALSE {add('K');} { $$.nd = NULL; }
+| TRUE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }
+| FALSE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }
 ;
 
-statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $3.name);  
+statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $3.name);
         if(check_types($2.name, $5.type)) { 
             success=0;
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $3.name);
@@ -215,7 +216,7 @@ value: NUMBER {
     check_declaration($1.name);
     strcpy($$.name, $1.name);
     char *id_type = get_type($1.name);
-    strcpy($$.type,id_type); 
+    if(id_type!=NULL) strcpy($$.type,id_type); 
     $$.nd = mknode(NULL, NULL, $1.name); 
     }
 ;
@@ -278,7 +279,7 @@ int main() {
 
 void check_declaration(char *c) {    
     q = search(c);    
-    if(!q) {        
+    if(!q || q==-2) {        
         sprintf(errors[sem_errors], "Line %d: Variable \"%s\" not declared before usage!\n", line_no, c);  
         sem_errors++;    
     }
@@ -311,7 +312,10 @@ char *get_type(char *var){
 int search(char *type) { 
     int i; 
     for(i=count-1; i>=0; i--) {
-        if(strcmp(symbol_table[i].id_name, type)==0) {   
+        if(strcmp(symbol_table[i].id_name, type)==0) {
+            if(!strcmp(symbol_table[i].type,"Function")){
+                return -2;
+            }   
             return -1;
             break;  
         }

@@ -1,6 +1,6 @@
 boolean main(){
+    remember decimal x = 5.0;
     remember number y = 5;
-    remember decimal x = 10.7;
     checkif (x > 5.0) {
         tellme("x is greater than y");
     }
@@ -11,6 +11,6 @@ boolean main(){
         tellme(x);
     }
     take("Enter a number: ", &y);
-    remember number z = 3 exp 4;
-    return wrong;
+    remember letter z = 3.2 exp 4;
+    return main;
 }
