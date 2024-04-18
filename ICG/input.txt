@@ -10,7 +10,7 @@ boolean main(){
     }
     checktill (x >= 0.5) {
         tellme(x);
-        x = x + 1.0;
+        x = x + 1.0 * 4.0;
     }
     take("Enter a number: ", &y);
     remember number z = 3 exp 4;

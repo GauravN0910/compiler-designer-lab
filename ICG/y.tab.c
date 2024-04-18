@@ -80,7 +80,7 @@
     int yylex(void);
     int yywrap();
 
-    struct node* mknode(struct node *left, struct node *right, char *token);
+    struct node* mknode(struct node *left, struct node *right, char *token,float value);
     void printBT(struct node*);
     void check_declaration(char *c);
     struct node *head;
@@ -117,10 +117,11 @@
         struct node *left; 
         struct node *right; 
         char *token; 
+        float value;
     };
     int success = 1;
 
-#line 124 "y.tab.c"
+#line 125 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -241,7 +242,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 54 "toylangparser.y"
+#line 55 "toylangparser.y"
  
 	struct var_name { 
 		char name[100]; 
@@ -266,7 +267,7 @@ union YYSTYPE
         float value;
     } nd_obj3;
 
-#line 270 "y.tab.c"
+#line 271 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -755,14 +756,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    86,    86,    90,    93,    94,    95,    96,    99,   100,
-     103,   103,   108,   108,   108,   108,   113,   114,   114,   115,
-     115,   115,   117,   121,   123,   123,   124,   127,   147,   147,
-     148,   148,   151,   151,   164,   164,   176,   176,   179,   180,
-     184,   196,   199,   211,   214,   226,   227,   230,   231,   235,
-     238,   239,   242,   243,   246,   247,   248,   249,   250,   251,
-     254,   262,   270,   279,   280,   283,   284,   287,   288,   291,
-     291,   292
+       0,    87,    87,    91,    94,    95,    96,    97,   100,   101,
+     104,   104,   109,   109,   109,   109,   114,   115,   115,   116,
+     116,   116,   118,   122,   124,   124,   125,   128,   148,   148,
+     149,   149,   152,   152,   166,   166,   179,   179,   182,   183,
+     187,   200,   203,   216,   219,   232,   233,   236,   237,   241,
+     244,   245,   248,   249,   252,   253,   254,   255,   256,   257,
+     260,   268,   276,   285,   286,   289,   290,   293,   294,   297,
+     297,   298
 };
 #endif
 
@@ -1680,168 +1681,168 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: entry '(' ')' '{' body return '}'  */
-#line 86 "toylangparser.y"
-                                           { struct node *main = mknode((yyvsp[-2].nd_obj).nd, (yyvsp[-1].nd_obj).nd, "main"); (yyval.nd_obj).nd = mknode((yyvsp[-6].nd_obj).nd, main, "program"); head = (yyval.nd_obj).nd; }
-#line 1686 "y.tab.c"
+#line 87 "toylangparser.y"
+                                           { struct node *main = mknode((yyvsp[-2].nd_obj).nd, (yyvsp[-1].nd_obj).nd, "main",0); (yyval.nd_obj).nd = mknode((yyvsp[-6].nd_obj).nd, main, "program",0); head = (yyval.nd_obj).nd; }
+#line 1687 "y.tab.c"
     break;
 
   case 3: /* entry: datatype ID  */
-#line 90 "toylangparser.y"
+#line 91 "toylangparser.y"
                    { add('F');}
-#line 1692 "y.tab.c"
+#line 1693 "y.tab.c"
     break;
 
   case 4: /* datatype: INT  */
-#line 93 "toylangparser.y"
-              { insert_type();  (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name);}
-#line 1698 "y.tab.c"
+#line 94 "toylangparser.y"
+              { insert_type();  (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0);}
+#line 1699 "y.tab.c"
     break;
 
   case 5: /* datatype: FLOAT  */
-#line 94 "toylangparser.y"
-         { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name);}
-#line 1704 "y.tab.c"
+#line 95 "toylangparser.y"
+         { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0);}
+#line 1705 "y.tab.c"
     break;
 
   case 6: /* datatype: CHAR  */
-#line 95 "toylangparser.y"
-       { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name);}
-#line 1710 "y.tab.c"
+#line 96 "toylangparser.y"
+       { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0);}
+#line 1711 "y.tab.c"
     break;
 
   case 7: /* datatype: BOOL  */
-#line 96 "toylangparser.y"
-       { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name);}
-#line 1716 "y.tab.c"
+#line 97 "toylangparser.y"
+       { insert_type(); (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0);}
+#line 1717 "y.tab.c"
     break;
 
   case 8: /* body: block body  */
-#line 99 "toylangparser.y"
-                 {(yyval.nd_obj).nd = mknode((yyvsp[-1].nd_obj).nd, (yyvsp[0].nd_obj).nd, "body");}
-#line 1722 "y.tab.c"
+#line 100 "toylangparser.y"
+                 {(yyval.nd_obj).nd = mknode((yyvsp[-1].nd_obj).nd, (yyvsp[0].nd_obj).nd, "body",0);}
+#line 1723 "y.tab.c"
     break;
 
   case 9: /* body: %empty  */
-#line 100 "toylangparser.y"
+#line 101 "toylangparser.y"
   { (yyval.nd_obj).nd = NULL; }
-#line 1728 "y.tab.c"
+#line 1729 "y.tab.c"
     break;
 
   case 10: /* $@1: %empty  */
-#line 103 "toylangparser.y"
+#line 104 "toylangparser.y"
              {add('K'); is_for=1; }
-#line 1734 "y.tab.c"
+#line 1735 "y.tab.c"
     break;
 
   case 11: /* block: WHILE $@1 '(' condition ')' '{' body '}'  */
-#line 103 "toylangparser.y"
+#line 104 "toylangparser.y"
                                                                    { 
-    (yyval.nd_obj).nd = mknode((yyvsp[-4].nd_obj3).nd, (yyvsp[-1].nd_obj).nd, (yyvsp[-7].nd_obj).name);
+    (yyval.nd_obj).nd = mknode((yyvsp[-4].nd_obj3).nd, (yyvsp[-1].nd_obj).nd, (yyvsp[-7].nd_obj).name,0);
     sprintf(icg[ic_idx++], "JUMP to %s\n", (yyvsp[-4].nd_obj3).if_body);
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-4].nd_obj3).else_body);
 }
-#line 1744 "y.tab.c"
+#line 1745 "y.tab.c"
     break;
 
   case 12: /* $@2: %empty  */
-#line 108 "toylangparser.y"
+#line 109 "toylangparser.y"
      {add('K'); is_for =0;}
-#line 1750 "y.tab.c"
+#line 1751 "y.tab.c"
     break;
 
   case 13: /* $@3: %empty  */
-#line 108 "toylangparser.y"
+#line 109 "toylangparser.y"
                                               { sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-1].nd_obj3).if_body); }
-#line 1756 "y.tab.c"
+#line 1757 "y.tab.c"
     break;
 
   case 14: /* $@4: %empty  */
-#line 108 "toylangparser.y"
+#line 109 "toylangparser.y"
                                                                                                                     {  sprintf(icg[ic_idx++], "\nJUMP to %s\n", (yyvsp[-5].nd_obj3).after_else_body); sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-5].nd_obj3).else_body); }
-#line 1762 "y.tab.c"
+#line 1763 "y.tab.c"
     break;
 
   case 15: /* block: IF $@2 '(' condition ')' $@3 '{' body '}' $@4 else  */
-#line 108 "toylangparser.y"
+#line 109 "toylangparser.y"
                                                                                                                                                                                                                                                    { 
-        struct node *iff = mknode((yyvsp[-7].nd_obj3).nd, (yyvsp[-3].nd_obj).nd, (yyvsp[-10].nd_obj).name); 
-        (yyval.nd_obj).nd = mknode(iff, (yyvsp[0].nd_obj).nd, "if-else-block"); 
+        struct node *iff = mknode((yyvsp[-7].nd_obj3).nd, (yyvsp[-3].nd_obj).nd, (yyvsp[-10].nd_obj).name,0); 
+        (yyval.nd_obj).nd = mknode(iff, (yyvsp[0].nd_obj).nd, "if-else-block",0); 
         sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyvsp[-7].nd_obj3).after_else_body);
     }
-#line 1772 "y.tab.c"
+#line 1773 "y.tab.c"
     break;
 
   case 16: /* block: statement ';'  */
-#line 113 "toylangparser.y"
+#line 114 "toylangparser.y"
                 { (yyval.nd_obj).nd = (yyvsp[-1].nd_obj).nd; }
-#line 1778 "y.tab.c"
+#line 1779 "y.tab.c"
     break;
 
   case 17: /* $@5: %empty  */
-#line 114 "toylangparser.y"
+#line 115 "toylangparser.y"
           { add('K'); }
-#line 1784 "y.tab.c"
+#line 1785 "y.tab.c"
     break;
 
   case 18: /* block: PRINTFF $@5 '(' printparam ')' ';'  */
-#line 114 "toylangparser.y"
-                                               { (yyval.nd_obj).nd = mknode((yyvsp[-2].nd_obj).nd, NULL, (yyvsp[-5].nd_obj).name); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
-#line 1790 "y.tab.c"
+#line 115 "toylangparser.y"
+                                               { (yyval.nd_obj).nd = mknode((yyvsp[-2].nd_obj).nd, NULL, (yyvsp[-5].nd_obj).name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
+#line 1791 "y.tab.c"
     break;
 
   case 19: /* $@6: %empty  */
-#line 115 "toylangparser.y"
+#line 116 "toylangparser.y"
          {add('K');}
-#line 1796 "y.tab.c"
+#line 1797 "y.tab.c"
     break;
 
   case 20: /* $@7: %empty  */
-#line 115 "toylangparser.y"
+#line 116 "toylangparser.y"
                                         { check_declaration((yyvsp[0].nd_obj).name); }
-#line 1802 "y.tab.c"
+#line 1803 "y.tab.c"
     break;
 
   case 21: /* block: SCANFF $@6 '(' STR ',' '&' ID $@7 ')' ';'  */
-#line 115 "toylangparser.y"
-                                                                                { struct node* n1 = mknode(NULL,NULL,(yyvsp[-6].nd_obj).name); struct node* n2 = mknode(NULL,NULL,(yyvsp[-3].nd_obj).name); (yyval.nd_obj).nd = mknode(n1,n2,(yyvsp[-9].nd_obj).name); }
-#line 1808 "y.tab.c"
+#line 116 "toylangparser.y"
+                                                                                { struct node* n1 = mknode(NULL,NULL,(yyvsp[-6].nd_obj).name,0); struct node* n2 = mknode(NULL,NULL,(yyvsp[-3].nd_obj).name,0); (yyval.nd_obj).nd = mknode(n1,n2,(yyvsp[-9].nd_obj).name,0);}
+#line 1809 "y.tab.c"
     break;
 
   case 22: /* printparam: valcharbool  */
-#line 117 "toylangparser.y"
+#line 118 "toylangparser.y"
                         { 
     (yyval.nd_obj).nd = (yyvsp[0].nd_obj2).nd;  
     sprintf(icg[ic_idx++], "\nPARAM %s\n", (yyvsp[0].nd_obj2).name);
 }
-#line 1817 "y.tab.c"
+#line 1818 "y.tab.c"
     break;
 
   case 23: /* printparam: STR  */
-#line 121 "toylangparser.y"
-      { (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); sprintf(icg[ic_idx++], "\n t0 = %s\n PARAM t0\n", (yyvsp[0].nd_obj).name); }
-#line 1823 "y.tab.c"
+#line 122 "toylangparser.y"
+      { (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0); sprintf(icg[ic_idx++], "\n t0 = %s\n PARAM t0\n", (yyvsp[0].nd_obj).name); }
+#line 1824 "y.tab.c"
     break;
 
   case 24: /* $@8: %empty  */
-#line 123 "toylangparser.y"
+#line 124 "toylangparser.y"
            {add('K');}
-#line 1829 "y.tab.c"
+#line 1830 "y.tab.c"
     break;
 
   case 25: /* else: ELSE $@8 '{' body '}'  */
-#line 123 "toylangparser.y"
-                                    { (yyval.nd_obj).nd = mknode(NULL, (yyvsp[-1].nd_obj).nd, (yyvsp[-4].nd_obj).name); }
-#line 1835 "y.tab.c"
+#line 124 "toylangparser.y"
+                                    { (yyval.nd_obj).nd = mknode(NULL, (yyvsp[-1].nd_obj).nd, (yyvsp[-4].nd_obj).name,0); }
+#line 1836 "y.tab.c"
     break;
 
   case 26: /* else: %empty  */
-#line 124 "toylangparser.y"
+#line 125 "toylangparser.y"
    { (yyval.nd_obj).nd = NULL; }
-#line 1841 "y.tab.c"
+#line 1842 "y.tab.c"
     break;
 
   case 27: /* condition: valcharbool relop valcharbool  */
-#line 127 "toylangparser.y"
+#line 128 "toylangparser.y"
                                          { 
     if(strcmp((yyvsp[-2].nd_obj2).type,(yyvsp[0].nd_obj2).type)){
         success=0;
@@ -1849,7 +1850,7 @@ yyreduce:
         sem_errors++;
     }
     strcpy((yyval.nd_obj3).type,"boolean");
-    (yyval.nd_obj3).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name);  
+    (yyval.nd_obj3).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name,0);  
     if(is_for) {
 		sprintf((yyval.nd_obj3).if_body, "L%d", label++);
 		sprintf(icg[ic_idx++], "\nLABEL %s:\n", (yyval.nd_obj3).if_body);
@@ -1862,65 +1863,66 @@ yyreduce:
         sprintf((yyval.nd_obj3).after_else_body, "L%d", label++);
 	}
 }
-#line 1866 "y.tab.c"
+#line 1867 "y.tab.c"
     break;
 
   case 28: /* $@9: %empty  */
-#line 147 "toylangparser.y"
+#line 148 "toylangparser.y"
        {add('K');}
-#line 1872 "y.tab.c"
+#line 1873 "y.tab.c"
     break;
 
   case 29: /* condition: TRUE $@9  */
-#line 147 "toylangparser.y"
+#line 148 "toylangparser.y"
                    { (yyval.nd_obj3).nd = NULL; strcpy((yyval.nd_obj3).type,"boolean"); }
-#line 1878 "y.tab.c"
+#line 1879 "y.tab.c"
     break;
 
   case 30: /* $@10: %empty  */
-#line 148 "toylangparser.y"
+#line 149 "toylangparser.y"
         {add('K');}
-#line 1884 "y.tab.c"
+#line 1885 "y.tab.c"
     break;
 
   case 31: /* condition: FALSE $@10  */
-#line 148 "toylangparser.y"
+#line 149 "toylangparser.y"
                     { (yyval.nd_obj3).nd = NULL; strcpy((yyval.nd_obj3).type,"boolean"); }
-#line 1890 "y.tab.c"
+#line 1891 "y.tab.c"
     break;
 
   case 32: /* $@11: %empty  */
-#line 151 "toylangparser.y"
+#line 152 "toylangparser.y"
                                { add('V'); }
-#line 1896 "y.tab.c"
+#line 1897 "y.tab.c"
     break;
 
   case 33: /* statement: DECLARE datatype ID $@11 init  */
-#line 151 "toylangparser.y"
-                                                  { (yyvsp[-2].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-2].nd_obj).name);  
+#line 152 "toylangparser.y"
+                                                  { (yyvsp[-2].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-2].nd_obj).name,0);  
         if(check_types((yyvsp[-3].nd_obj).name, (yyvsp[0].nd_obj2).type)) { 
             success=0;
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, (yyvsp[-2].nd_obj).name);
             sem_errors++;
         } 
         else { 
-            (yyvsp[-4].nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[-2].nd_obj).nd, (yyvsp[-4].nd_obj).name);
+            (yyvsp[-4].nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[-2].nd_obj).nd, (yyvsp[-4].nd_obj).name,0);
         } 
-        (yyval.nd_obj).nd = mknode((yyvsp[-4].nd_obj).nd, (yyvsp[0].nd_obj2).nd, "DECLARE");
+        (yyval.nd_obj).nd = mknode((yyvsp[-4].nd_obj).nd, (yyvsp[0].nd_obj2).nd, "DECLARE",0);
         (yyvsp[-2].nd_obj).value = (yyvsp[0].nd_obj2).value;
+        (yyvsp[-2].nd_obj).nd->value = (yyvsp[0].nd_obj2).value;
         sprintf(icg[ic_idx++], "%s = %s\n", (yyvsp[-2].nd_obj).name, (yyvsp[0].nd_obj2).name);
     }
-#line 1914 "y.tab.c"
+#line 1916 "y.tab.c"
     break;
 
   case 34: /* $@12: %empty  */
-#line 164 "toylangparser.y"
+#line 166 "toylangparser.y"
      { check_declaration((yyvsp[0].nd_obj).name); }
-#line 1920 "y.tab.c"
+#line 1922 "y.tab.c"
     break;
 
   case 35: /* statement: ID $@12 '=' expression  */
-#line 164 "toylangparser.y"
+#line 166 "toylangparser.y"
                                                     {
         char *id_type = get_type((yyvsp[-3].nd_obj).name);
         if(id_type!=NULL && strcmp(id_type,(yyvsp[0].nd_obj2).type)){
@@ -1928,40 +1930,41 @@ yyreduce:
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, (yyvsp[-3].nd_obj).name);
             sem_errors++;
         }
-        (yyvsp[-3].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-3].nd_obj).name); 
-        (yyval.nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[0].nd_obj2).nd, "="); 
+        (yyvsp[-3].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-3].nd_obj).name,0); 
+        (yyval.nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[0].nd_obj2).nd, "=",0); 
         (yyvsp[-3].nd_obj).value = (yyvsp[0].nd_obj2).value;
+        (yyvsp[-3].nd_obj).nd->value = (yyvsp[0].nd_obj2).value;
         sprintf(icg[ic_idx++], "%s = %s\n", (yyvsp[-3].nd_obj).name, (yyvsp[0].nd_obj2).name);
     }
-#line 1937 "y.tab.c"
+#line 1940 "y.tab.c"
     break;
 
   case 36: /* $@13: %empty  */
-#line 176 "toylangparser.y"
+#line 179 "toylangparser.y"
      { check_declaration((yyvsp[0].nd_obj).name); }
-#line 1943 "y.tab.c"
+#line 1946 "y.tab.c"
     break;
 
   case 37: /* statement: ID $@13 relop expression  */
-#line 176 "toylangparser.y"
-                                                      { (yyvsp[-3].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-3].nd_obj).name); (yyval.nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name ); }
-#line 1949 "y.tab.c"
+#line 179 "toylangparser.y"
+                                                      { (yyvsp[-3].nd_obj).nd = mknode(NULL, NULL, (yyvsp[-3].nd_obj).name,0); (yyval.nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name,0); }
+#line 1952 "y.tab.c"
     break;
 
   case 38: /* init: '=' charbool  */
-#line 179 "toylangparser.y"
-                    { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; }
-#line 1955 "y.tab.c"
+#line 182 "toylangparser.y"
+                    { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value; }
+#line 1958 "y.tab.c"
     break;
 
   case 39: /* init: '=' expression  */
-#line 180 "toylangparser.y"
-                 { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); strcpy((yyval.nd_obj2).name,(yyvsp[0].nd_obj2).name); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; }
-#line 1961 "y.tab.c"
+#line 183 "toylangparser.y"
+                 { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); strcpy((yyval.nd_obj2).name,(yyvsp[0].nd_obj2).name); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value; }
+#line 1964 "y.tab.c"
     break;
 
   case 40: /* expression: expression addops term  */
-#line 184 "toylangparser.y"
+#line 187 "toylangparser.y"
                                     {
         if(strcmp((yyvsp[-2].nd_obj2).type,(yyvsp[0].nd_obj2).type)){
             success=0;
@@ -1970,21 +1973,22 @@ yyreduce:
         }
         sprintf((yyval.nd_obj2).name,"t%d",temp_var++);
         strcpy((yyval.nd_obj2).type,(yyvsp[-2].nd_obj2).type);
-        (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name);
+        (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name,0);
         (yyval.nd_obj2).value = (yyvsp[-2].nd_obj2).value + (yyvsp[0].nd_obj2).value;
+        (yyval.nd_obj2).nd->value = (yyval.nd_obj2).value;
         sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.nd_obj2).name, (yyvsp[-2].nd_obj2).name, (yyvsp[-1].nd_obj).name, (yyvsp[0].nd_obj2).name);
     }
-#line 1978 "y.tab.c"
+#line 1982 "y.tab.c"
     break;
 
   case 41: /* expression: term  */
-#line 196 "toylangparser.y"
-       { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; }
-#line 1984 "y.tab.c"
+#line 200 "toylangparser.y"
+       { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value;}
+#line 1988 "y.tab.c"
     break;
 
   case 42: /* term: term mulops factor  */
-#line 199 "toylangparser.y"
+#line 203 "toylangparser.y"
                           {
     if(strcmp((yyvsp[-2].nd_obj2).type,(yyvsp[0].nd_obj2).type)){
         success=0;
@@ -1992,22 +1996,23 @@ yyreduce:
         sem_errors++;
     } 
     strcpy((yyval.nd_obj2).type,(yyvsp[-2].nd_obj2).type);
-    (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name); 
+    (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name,0); 
     sprintf((yyval.nd_obj2).name,"t%d",temp_var++);
     sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.nd_obj2).name, (yyvsp[-2].nd_obj2).name, (yyvsp[-1].nd_obj).name, (yyvsp[0].nd_obj2).name);
     (yyval.nd_obj2).value = (yyvsp[-2].nd_obj2).value * (yyvsp[0].nd_obj2).value;
+    (yyval.nd_obj2).nd->value = (yyval.nd_obj2).value;
     }
-#line 2001 "y.tab.c"
+#line 2006 "y.tab.c"
     break;
 
   case 43: /* term: factor  */
-#line 211 "toylangparser.y"
-         { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; }
-#line 2007 "y.tab.c"
+#line 216 "toylangparser.y"
+         { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value;}
+#line 2012 "y.tab.c"
     break;
 
   case 44: /* factor: base exponent base  */
-#line 214 "toylangparser.y"
+#line 219 "toylangparser.y"
                             {
     if(strcmp((yyvsp[-2].nd_obj2).type,(yyvsp[0].nd_obj2).type)){
         success=0;
@@ -2015,132 +2020,133 @@ yyreduce:
         sem_errors++;
     }
     strcpy((yyval.nd_obj2).type,(yyvsp[-2].nd_obj2).type);
-    (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name); 
+    (yyval.nd_obj2).nd = mknode((yyvsp[-2].nd_obj2).nd, (yyvsp[0].nd_obj2).nd, (yyvsp[-1].nd_obj).name,0); 
     sprintf((yyval.nd_obj2).name,"t%d",temp_var++);
     sprintf(icg[ic_idx++], "%s = %s %s %s\n",  (yyval.nd_obj2).name, (yyvsp[-2].nd_obj2).name, (yyvsp[-1].nd_obj).name, (yyvsp[0].nd_obj2).name);
     (yyval.nd_obj2).value = pow((yyvsp[-2].nd_obj2).value, (yyvsp[0].nd_obj2).value);
+    (yyval.nd_obj2).nd->value = (yyval.nd_obj2).value;
     }
-#line 2024 "y.tab.c"
-    break;
-
-  case 45: /* factor: LOG '(' value ',' value ')'  */
-#line 226 "toylangparser.y"
-                              { (yyval.nd_obj2).nd = mknode((yyvsp[-3].nd_obj2).nd, (yyvsp[-1].nd_obj2).nd, (yyvsp[-5].nd_obj).name);  }
 #line 2030 "y.tab.c"
     break;
 
-  case 46: /* factor: base  */
-#line 227 "toylangparser.y"
-       { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; }
+  case 45: /* factor: LOG '(' value ',' value ')'  */
+#line 232 "toylangparser.y"
+                              { (yyval.nd_obj2).nd = mknode((yyvsp[-3].nd_obj2).nd, (yyvsp[-1].nd_obj2).nd, (yyvsp[-5].nd_obj).name,0); }
 #line 2036 "y.tab.c"
     break;
 
-  case 47: /* base: value  */
-#line 230 "toylangparser.y"
-             { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value;}
+  case 46: /* factor: base  */
+#line 233 "toylangparser.y"
+       { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value; }
 #line 2042 "y.tab.c"
     break;
 
-  case 48: /* base: '(' expression ')'  */
-#line 231 "toylangparser.y"
-                     { (yyval.nd_obj2).nd = (yyvsp[-1].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[-1].nd_obj2).type); }
+  case 47: /* base: value  */
+#line 236 "toylangparser.y"
+             { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); (yyval.nd_obj2).value = (yyvsp[0].nd_obj2).value; (yyval.nd_obj2).nd->value = (yyvsp[0].nd_obj2).value;}
 #line 2048 "y.tab.c"
     break;
 
+  case 48: /* base: '(' expression ')'  */
+#line 237 "toylangparser.y"
+                     { (yyval.nd_obj2).nd = (yyvsp[-1].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[-1].nd_obj2).type); }
+#line 2054 "y.tab.c"
+    break;
+
   case 60: /* value: NUMBER  */
-#line 254 "toylangparser.y"
+#line 260 "toylangparser.y"
               { 
         strcpy(type, "number");
         add('C'); 
         strcpy((yyval.nd_obj2).name, (yyvsp[0].nd_obj).name);
         strcpy((yyval.nd_obj2).type, "number");
-        (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name);
+        (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name, atoi((yyvsp[0].nd_obj).name));
         (yyval.nd_obj2).value = atoi((yyvsp[0].nd_obj).name);
     }
-#line 2061 "y.tab.c"
+#line 2067 "y.tab.c"
     break;
 
   case 61: /* value: FLOAT_NUM  */
-#line 262 "toylangparser.y"
+#line 268 "toylangparser.y"
             { 
     strcpy(type, "decimal");
     add('C');
     strcpy((yyval.nd_obj2).name, (yyvsp[0].nd_obj).name);
     strcpy((yyval.nd_obj2).type, "decimal"); 
-    (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); 
+    (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,atof((yyvsp[0].nd_obj).name)); 
     (yyval.nd_obj2).value = atof((yyvsp[0].nd_obj).name);
     }
-#line 2074 "y.tab.c"
+#line 2080 "y.tab.c"
     break;
 
   case 62: /* value: ID  */
-#line 270 "toylangparser.y"
+#line 276 "toylangparser.y"
      {
     check_declaration((yyvsp[0].nd_obj).name);
     strcpy((yyval.nd_obj2).name, (yyvsp[0].nd_obj).name);
     char *id_type = get_type((yyvsp[0].nd_obj).name);
     if(id_type!=NULL) strcpy((yyval.nd_obj2).type,id_type); 
-    (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); 
+    (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0); 
     }
-#line 2086 "y.tab.c"
-    break;
-
-  case 63: /* charbool: bools  */
-#line 279 "toylangparser.y"
-                { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,"boolean");  }
 #line 2092 "y.tab.c"
     break;
 
-  case 64: /* charbool: CHARACTER  */
-#line 280 "toylangparser.y"
-            { add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); strcpy((yyval.nd_obj2).type,"letter"); }
+  case 63: /* charbool: bools  */
+#line 285 "toylangparser.y"
+                { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,"boolean");  }
 #line 2098 "y.tab.c"
     break;
 
-  case 65: /* valcharbool: value  */
-#line 283 "toylangparser.y"
-                   { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); }
+  case 64: /* charbool: CHARACTER  */
+#line 286 "toylangparser.y"
+            { add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0); strcpy((yyval.nd_obj2).type,"letter"); }
 #line 2104 "y.tab.c"
     break;
 
-  case 66: /* valcharbool: charbool  */
-#line 284 "toylangparser.y"
-           { (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj2).name); strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); }
+  case 65: /* valcharbool: value  */
+#line 289 "toylangparser.y"
+                   { (yyval.nd_obj2).nd = (yyvsp[0].nd_obj2).nd; strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); }
 #line 2110 "y.tab.c"
     break;
 
-  case 67: /* bools: TRUE  */
-#line 287 "toylangparser.y"
-            { strcpy(type,"boolean"); add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); strcpy((yyval.nd_obj2).type,"boolean");}
+  case 66: /* valcharbool: charbool  */
+#line 290 "toylangparser.y"
+           { (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj2).name,0); strcpy((yyval.nd_obj2).type,(yyvsp[0].nd_obj2).type); }
 #line 2116 "y.tab.c"
     break;
 
-  case 68: /* bools: FALSE  */
-#line 288 "toylangparser.y"
-        { strcpy(type,"boolean"); add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name); strcpy((yyval.nd_obj2).type,"boolean");}
+  case 67: /* bools: TRUE  */
+#line 293 "toylangparser.y"
+            { strcpy(type,"boolean"); add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0); strcpy((yyval.nd_obj2).type,"boolean");}
 #line 2122 "y.tab.c"
     break;
 
-  case 69: /* $@14: %empty  */
-#line 291 "toylangparser.y"
-               {add('K');}
+  case 68: /* bools: FALSE  */
+#line 294 "toylangparser.y"
+        { strcpy(type,"boolean"); add('C'); (yyval.nd_obj2).nd = mknode(NULL, NULL, (yyvsp[0].nd_obj).name,0); strcpy((yyval.nd_obj2).type,"boolean");}
 #line 2128 "y.tab.c"
     break;
 
-  case 70: /* return: RETURN $@14 valcharbool ';'  */
-#line 291 "toylangparser.y"
-                                           { check_return_type((yyvsp[-1].nd_obj2).type);  (yyval.nd_obj).nd = mknode((yyvsp[-1].nd_obj2).nd,NULL,(yyvsp[-3].nd_obj).name); }
+  case 69: /* $@14: %empty  */
+#line 297 "toylangparser.y"
+               {add('K');}
 #line 2134 "y.tab.c"
     break;
 
-  case 71: /* return: %empty  */
-#line 292 "toylangparser.y"
-  { (yyval.nd_obj).nd = NULL; }
+  case 70: /* return: RETURN $@14 valcharbool ';'  */
+#line 297 "toylangparser.y"
+                                           { check_return_type((yyvsp[-1].nd_obj2).type);  (yyval.nd_obj).nd = mknode((yyvsp[-1].nd_obj2).nd,NULL,(yyvsp[-3].nd_obj).name,0); }
 #line 2140 "y.tab.c"
     break;
 
+  case 71: /* return: %empty  */
+#line 298 "toylangparser.y"
+  { (yyval.nd_obj).nd = NULL; }
+#line 2146 "y.tab.c"
+    break;
 
-#line 2144 "y.tab.c"
+
+#line 2150 "y.tab.c"
 
       default: break;
     }
@@ -2364,7 +2370,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 295 "toylangparser.y"
+#line 301 "toylangparser.y"
 
 
 int yyerror(const char *msg)
@@ -2516,12 +2522,11 @@ void add(char c) {
 
 
 void printBTHelper(char* prefix, struct node* ptr, int isLeft) {
-
     if( ptr != NULL ) {
         printf("%s",prefix);
         if(isLeft) { printf("○→  "); } 
 		else { printf("●→  "); }
-        printf("%s (%f)",ptr->token,ptr->value);
+        printf("%s (%0.1f)",ptr->token,ptr->value);
 		printf("\n");
 		char* addon = isLeft ? "│   " : "    ";
     	int len2 = strlen(addon);
@@ -2540,12 +2545,13 @@ void printBT(struct node* ptr) {
     printBTHelper("", ptr, 0);
 }
 
-struct node* mknode(struct node *left, struct node *right, char *token) {	
+struct node* mknode(struct node *left, struct node *right, char *token,float value) {	
 	struct node *newnode = (struct node *)malloc(sizeof(struct node));
 	char *newstr = (char *)malloc(strlen(token)+1);
 	strcpy(newstr, token);
 	newnode->left = left;
 	newnode->right = right;
 	newnode->token = newstr;
+    newnode->value = value;
 	return(newnode);
 }

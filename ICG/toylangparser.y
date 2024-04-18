@@ -10,7 +10,7 @@
     int yylex(void);
     int yywrap();
 
-    struct node* mknode(struct node *left, struct node *right, char *token);
+    struct node* mknode(struct node *left, struct node *right, char *token,float value);
     void printBT(struct node*);
     void check_declaration(char *c);
     struct node *head;
@@ -47,6 +47,7 @@
         struct node *left; 
         struct node *right; 
         char *token; 
+        float value;
     };
     int success = 1;
 %}
@@ -83,44 +84,44 @@
 %define parse.error verbose
 %%
 
-program: entry '(' ')' '{' body return '}' { struct node *main = mknode($5.nd, $6.nd, "main"); $$.nd = mknode($1.nd, main, "program"); head = $$.nd; }
+program: entry '(' ')' '{' body return '}' { struct node *main = mknode($5.nd, $6.nd, "main",0); $$.nd = mknode($1.nd, main, "program",0); head = $$.nd; }
 ;
 
 
 entry: datatype ID { add('F');}
 ;
 
-datatype: INT { insert_type();  $$.nd = mknode(NULL, NULL, $1.name);}
-| FLOAT  { insert_type(); $$.nd = mknode(NULL, NULL, $1.name);}
-| CHAR { insert_type(); $$.nd = mknode(NULL, NULL, $1.name);}
-| BOOL { insert_type(); $$.nd = mknode(NULL, NULL, $1.name);}
+datatype: INT { insert_type();  $$.nd = mknode(NULL, NULL, $1.name,0);}
+| FLOAT  { insert_type(); $$.nd = mknode(NULL, NULL, $1.name,0);}
+| CHAR { insert_type(); $$.nd = mknode(NULL, NULL, $1.name,0);}
+| BOOL { insert_type(); $$.nd = mknode(NULL, NULL, $1.name,0);}
 ;
 
-body: block body {$$.nd = mknode($1.nd, $2.nd, "body");}
+body: block body {$$.nd = mknode($1.nd, $2.nd, "body",0);}
 | { $$.nd = NULL; }
 ;
 
 block: WHILE {add('K'); is_for=1; } '(' condition ')' '{' body '}' { 
-    $$.nd = mknode($4.nd, $7.nd, $1.name);
+    $$.nd = mknode($4.nd, $7.nd, $1.name,0);
     sprintf(icg[ic_idx++], "JUMP to %s\n", $4.if_body);
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
 }
 | IF {add('K'); is_for =0;} '(' condition ')' { sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.if_body); } '{' body '}' {  sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.after_else_body); sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body); } else { 
-        struct node *iff = mknode($4.nd, $8.nd, $1.name); 
-        $$.nd = mknode(iff, $11.nd, "if-else-block"); 
+        struct node *iff = mknode($4.nd, $8.nd, $1.name,0); 
+        $$.nd = mknode(iff, $11.nd, "if-else-block",0); 
         sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.after_else_body);
     }
 | statement ';' { $$.nd = $1.nd; }
-| PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
-| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name); struct node* n2 = mknode(NULL,NULL,$7.name); $$.nd = mknode(n1,n2,$1.name); };
+| PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
+| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);};
 
 printparam: valcharbool { 
     $$.nd = $1.nd;  
     sprintf(icg[ic_idx++], "\nPARAM %s\n", $1.name);
 }
-| STR { $$.nd = mknode(NULL, NULL, $1.name); sprintf(icg[ic_idx++], "\n t0 = %s\n PARAM t0\n", $1.name); }
+| STR { $$.nd = mknode(NULL, NULL, $1.name,0); sprintf(icg[ic_idx++], "\n t0 = %s\n PARAM t0\n", $1.name); }
 
-else: ELSE {add('K');} '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name); }
+else: ELSE {add('K');} '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name,0); }
 |  { $$.nd = NULL; }
 ;
 
@@ -131,7 +132,7 @@ condition: valcharbool relop valcharbool {
         sem_errors++;
     }
     strcpy($$.type,"boolean");
-    $$.nd = mknode($1.nd, $3.nd, $2.name);  
+    $$.nd = mknode($1.nd, $3.nd, $2.name,0);  
     if(is_for) {
 		sprintf($$.if_body, "L%d", label++);
 		sprintf(icg[ic_idx++], "\nLABEL %s:\n", $$.if_body);
@@ -148,17 +149,18 @@ condition: valcharbool relop valcharbool {
 | FALSE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }
 ;
 
-statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $3.name);  
+statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $3.name,0);  
         if(check_types($2.name, $5.type)) { 
             success=0;
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $3.name);
             sem_errors++;
         } 
         else { 
-            $1.nd = mknode($2.nd, $3.nd, $1.name);
+            $1.nd = mknode($2.nd, $3.nd, $1.name,0);
         } 
-        $$.nd = mknode($1.nd, $5.nd, "DECLARE");
+        $$.nd = mknode($1.nd, $5.nd, "DECLARE",0);
         $3.value = $5.value;
+        $3.nd->value = $5.value;
         sprintf(icg[ic_idx++], "%s = %s\n", $3.name, $5.name);
     } 
 | ID { check_declaration($1.name); } '=' expression {
@@ -168,16 +170,17 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
             sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $1.name);
             sem_errors++;
         }
-        $1.nd = mknode(NULL, NULL, $1.name); 
-        $$.nd = mknode($1.nd, $4.nd, "="); 
+        $1.nd = mknode(NULL, NULL, $1.name,0); 
+        $$.nd = mknode($1.nd, $4.nd, "=",0); 
         $1.value = $4.value;
+        $1.nd->value = $4.value;
         sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
     }
-| ID { check_declaration($1.name); } relop expression { $1.nd = mknode(NULL, NULL, $1.name); $$.nd = mknode($1.nd, $4.nd, $3.name ); }
+| ID { check_declaration($1.name); } relop expression { $1.nd = mknode(NULL, NULL, $1.name,0); $$.nd = mknode($1.nd, $4.nd, $3.name,0); }
 ;
 
-init: '=' charbool  { $$.nd = $2.nd; strcpy($$.type,$2.type); $$.value = $2.value; }
-| '=' expression { $$.nd = $2.nd; strcpy($$.type,$2.type); strcpy($$.name,$2.name); $$.value = $2.value; }
+init: '=' charbool  { $$.nd = $2.nd; strcpy($$.type,$2.type); $$.value = $2.value; $$.nd->value = $2.value; }
+| '=' expression { $$.nd = $2.nd; strcpy($$.type,$2.type); strcpy($$.name,$2.name); $$.value = $2.value; $$.nd->value = $2.value; }
 ;
 
 
@@ -189,11 +192,12 @@ expression : expression addops term {
         }
         sprintf($$.name,"t%d",temp_var++);
         strcpy($$.type,$1.type);
-        $$.nd = mknode($1.nd, $3.nd, $2.name);
+        $$.nd = mknode($1.nd, $3.nd, $2.name,0);
         $$.value = $1.value + $3.value;
+        $$.nd->value = $$.value;
         sprintf(icg[ic_idx++], "%s = %s %s %s\n",  $$.name, $1.name, $2.name, $3.name);
     } 
-| term { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; }
+| term { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; $$.nd->value = $1.value;}
 ;
 
 term : term mulops factor {
@@ -203,12 +207,13 @@ term : term mulops factor {
         sem_errors++;
     } 
     strcpy($$.type,$1.type);
-    $$.nd = mknode($1.nd, $3.nd, $2.name); 
+    $$.nd = mknode($1.nd, $3.nd, $2.name,0); 
     sprintf($$.name,"t%d",temp_var++);
     sprintf(icg[ic_idx++], "%s = %s %s %s\n",  $$.name, $1.name, $2.name, $3.name);
     $$.value = $1.value * $3.value;
+    $$.nd->value = $$.value;
     } 
-| factor { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; }
+| factor { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; $$.nd->value = $1.value;}
 ; 
 
 factor : base exponent base {
@@ -218,16 +223,17 @@ factor : base exponent base {
         sem_errors++;
     }
     strcpy($$.type,$1.type);
-    $$.nd = mknode($1.nd, $3.nd, $2.name); 
+    $$.nd = mknode($1.nd, $3.nd, $2.name,0); 
     sprintf($$.name,"t%d",temp_var++);
     sprintf(icg[ic_idx++], "%s = %s %s %s\n",  $$.name, $1.name, $2.name, $3.name);
     $$.value = pow($1.value, $3.value);
+    $$.nd->value = $$.value;
     } 
-| LOG '(' value ',' value ')' { $$.nd = mknode($3.nd, $5.nd, $1.name);  }
-| base { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; }
+| LOG '(' value ',' value ')' { $$.nd = mknode($3.nd, $5.nd, $1.name,0); }
+| base { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; $$.nd->value = $1.value; }
 ;
 
-base : value { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value;}
+base : value { $$.nd = $1.nd; strcpy($$.type,$1.type); $$.value = $1.value; $$.nd->value = $1.value;}
 | '(' expression ')' { $$.nd = $2.nd; strcpy($$.type,$2.type); }
 ;
 
@@ -256,7 +262,7 @@ value: NUMBER {
         add('C'); 
         strcpy($$.name, $1.name);
         strcpy($$.type, "number");
-        $$.nd = mknode(NULL, NULL, $1.name);
+        $$.nd = mknode(NULL, NULL, $1.name, atoi($1.name));
         $$.value = atoi($1.name);
     }
 | FLOAT_NUM { 
@@ -264,7 +270,7 @@ value: NUMBER {
     add('C');
     strcpy($$.name, $1.name);
     strcpy($$.type, "decimal"); 
-    $$.nd = mknode(NULL, NULL, $1.name); 
+    $$.nd = mknode(NULL, NULL, $1.name,atof($1.name)); 
     $$.value = atof($1.name);
     }
 | ID {
@@ -272,23 +278,23 @@ value: NUMBER {
     strcpy($$.name, $1.name);
     char *id_type = get_type($1.name);
     if(id_type!=NULL) strcpy($$.type,id_type); 
-    $$.nd = mknode(NULL, NULL, $1.name); 
+    $$.nd = mknode(NULL, NULL, $1.name,0); 
     }
 ;
 
 charbool: bools { $$.nd = $1.nd; strcpy($$.type,"boolean");  }
-| CHARACTER { add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"letter"); }
+| CHARACTER { add('C'); $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,"letter"); }
 ;
 
 valcharbool: value { $$.nd = $1.nd; strcpy($$.type,$1.type); }
-| charbool { $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,$1.type); }
+| charbool { $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,$1.type); }
 ;
 
-bools: TRUE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"boolean");}
-| FALSE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name); strcpy($$.type,"boolean");}
+bools: TRUE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,"boolean");}
+| FALSE { strcpy(type,"boolean"); add('C'); $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,"boolean");}
 ;
 
-return: RETURN {add('K');} valcharbool ';' { check_return_type($3.type);  $$.nd = mknode($3.nd,NULL,$1.name); }
+return: RETURN {add('K');} valcharbool ';' { check_return_type($3.type);  $$.nd = mknode($3.nd,NULL,$1.name,0); }
 | { $$.nd = NULL; } 
 ;
 
@@ -443,12 +449,11 @@ void add(char c) {
 
 
 void printBTHelper(char* prefix, struct node* ptr, int isLeft) {
-
     if( ptr != NULL ) {
         printf("%s",prefix);
         if(isLeft) { printf("○→  "); } 
 		else { printf("●→  "); }
-        printf("%s (%f)",ptr->token,ptr->value);
+        printf("%s (%0.1f)",ptr->token,ptr->value);
 		printf("\n");
 		char* addon = isLeft ? "│   " : "    ";
     	int len2 = strlen(addon);
@@ -467,12 +472,13 @@ void printBT(struct node* ptr) {
     printBTHelper("", ptr, 0);
 }
 
-struct node* mknode(struct node *left, struct node *right, char *token) {	
+struct node* mknode(struct node *left, struct node *right, char *token,float value) {	
 	struct node *newnode = (struct node *)malloc(sizeof(struct node));
 	char *newstr = (char *)malloc(strlen(token)+1);
 	strcpy(newstr, token);
 	newnode->left = left;
 	newnode->right = right;
 	newnode->token = newstr;
+    newnode->value = value;
 	return(newnode);
 }
