@@ -9,6 +9,8 @@
     int yyerror(const char *s);
     int yylex(void);
     int yywrap();
+    float get_value(char *var);
+    void set_value(char *var, float value);
 
     struct node* mknode(struct node *left, struct node *right, char *token,float value);
     void printBT(struct node*);
@@ -19,6 +21,7 @@
         char * data_type;
         char * type;
         int line_no;
+        float value;
     } symbol_table[40];
 
     void insert_type();
@@ -161,6 +164,7 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
         $$.nd = mknode($1.nd, $5.nd, "DECLARE",0);
         $3.value = $5.value;
         $3.nd->value = $5.value;
+        set_value($3.name, $5.value);
         sprintf(icg[ic_idx++], "%s = %s\n", $3.name, $5.name);
     } 
 | ID { check_declaration($1.name); } '=' expression {
@@ -174,6 +178,7 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
         $$.nd = mknode($1.nd, $4.nd, "=",0); 
         $1.value = $4.value;
         $1.nd->value = $4.value;
+        set_value($1.name, $4.value);
         sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
     }
 | ID { check_declaration($1.name); } relop expression { $1.nd = mknode(NULL, NULL, $1.name,0); $$.nd = mknode($1.nd, $4.nd, $3.name,0); }
@@ -279,6 +284,11 @@ value: NUMBER {
     char *id_type = get_type($1.name);
     if(id_type!=NULL) strcpy($$.type,id_type); 
     $$.nd = mknode(NULL, NULL, $1.name,0); 
+    q = search($1.name);
+    if(q==-1) {
+        $$.value = get_value($1.name);
+        $$.nd->value = $$.value;
+    }
     }
 ;
 
@@ -377,6 +387,24 @@ char *get_type(char *var){
 		}
 	}
     return NULL;
+}
+
+float get_value(char *var){
+    for(int i=0; i<count; i++) {
+        if(!strcmp(symbol_table[i].id_name, var)) {
+            return symbol_table[i].value;
+        }
+    }
+    return 0;
+}
+
+void set_value(char *var, float value){
+    for(int i=0; i<count; i++) {
+        if(!strcmp(symbol_table[i].id_name, var)) {
+            symbol_table[i].value = value;
+            return;
+        }
+    }
 }
 
 int search(char *type) { 
