@@ -158,7 +158,7 @@ union YYSTYPE
         int flistsize;
         int flist[10];
         float value;
-        int index_in_icg;
+        int label_for_while_start;
     } nd_obj3;
 
     struct var_name4{
