@@ -223,7 +223,6 @@ condition: condition AND M condition {
     }
 }
 | valcharbool relop valcharbool {
-    // printf("otha over da\n"); 
     if(strcmp($1.type,$3.type)){
         success=0;
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
@@ -245,6 +244,17 @@ condition: condition AND M condition {
         $$.tlist[$$.tlistsize++] = ic_idx-1;
         $$.flist[$$.flistsize++] = ic_idx++;
 	}
+}
+| '(' condition ')' { 
+    $$.nd = $2.nd; 
+    $$.tlistsize = $2.tlistsize;
+    $$.flistsize = $2.flistsize;
+    for(int i=0;i<$2.tlistsize;i++){
+        $$.tlist[i] = $2.tlist[i];
+    }
+    for(int i=0;i<$2.flistsize;i++){
+        $$.flist[i] = $2.flist[i];
+    }
 }
 | TRUE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }
 | FALSE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }

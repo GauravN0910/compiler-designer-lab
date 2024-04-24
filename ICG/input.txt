@@ -2,7 +2,7 @@ boolean main(){
     remember number y = 5;
     remember decimal x = 10.7;
     remember number k = 2 + 4 + 6;
-    checkif (x > 5.0 && x > 10.0 || x < 20.0) {
+    checkif ((x > 5.0 || x > 10.0) && x < 20.0) {
         tellme("x is greater than y");
     }
     otherwise {
