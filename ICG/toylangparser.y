@@ -37,6 +37,7 @@
 
     int sem_errors=0;
 	int label=0;
+    int line_label=0;
 	char buff[100];
 	char errors[10][100];
 	char reserved[15][20] = {"tellme", "take", "checkif", "otherwise", "checktill", "return", "log", "exp", "right", "wrong", "number", "decimal", "letter", "boolean", "main"};
@@ -44,7 +45,7 @@
     int temp_var=0;
     int is_for=0;
     
-    char icg[100][100];
+    char icg[1000][1000];
 
     struct node { 
         struct node *left; 
@@ -76,14 +77,24 @@
         char if_body[5];
         char else_body[5];
         char after_else_body[5];
+        int tlist[10];
+        int tlistsize;
+        int flistsize;
+        int flist[10];
         float value;
+        int index_in_icg;
     } nd_obj3;
+
+    struct var_name4{
+        int next_quad;
+    } nd_obj4;
 }
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
 %type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam
 %type <nd_obj2> init value expression term factor base charbool valcharbool bools
 %type <nd_obj3> condition
+%type <nd_obj4> M
 %define parse.error verbose
 %%
 
@@ -107,12 +118,38 @@ body: block body {$$.nd = mknode($1.nd, $2.nd, "body",0);}
 block: WHILE {add('K'); is_for=1; } '(' condition ')' '{' body '}' { 
     $$.nd = mknode($4.nd, $7.nd, $1.name,0);
     sprintf(icg[ic_idx++], "JUMP to %s\n", $4.if_body);
-	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
+	sprintf(icg[ic_idx++], "LABEL %s:\n", $4.else_body);
 }
-| IF {add('K'); is_for =0;} '(' condition ')' { sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.if_body); } '{' body '}' {  sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.after_else_body); sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body); } else { 
+| IF {add('K'); is_for =0;} '(' condition ')' { 
+    printf("tlist is : \n");
+    for(int i=0;i<$4.tlistsize;i++){
+        printf("%d\n",$4.tlist[i]);
+    }
+    printf("flist is : \n");
+    for(int i=0;i<$4.flistsize;i++){
+        printf("%d\n",$4.flist[i]);
+    }
+    sprintf(icg[ic_idx++], "LABEL L%d:\n", label++); 
+    for(int i=0;i<$4.tlistsize;i++){
+        char gotha[20];
+        sprintf(gotha, "GOTO L%d\n", label-1);
+        strcat(icg[$4.tlist[i]], gotha);
+    }
+} '{' body '}' {  
+    // sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.after_else_body);
+    // sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
+    sprintf(icg[ic_idx++],"JUMP TO L%d\n", label+1);
+    sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
+    for(int i=0;i<$4.flistsize;i++){
+        char gotha[20];
+        sprintf(gotha, "GOTO L%d\n", label-1);
+        sprintf(icg[$4.flist[i]],gotha);
+    } 
+    } else { 
         struct node *iff = mknode($4.nd, $8.nd, $1.name,0); 
         $$.nd = mknode(iff, $11.nd, "if-else-block",0); 
-        sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.after_else_body);
+        sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
+        // sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.after_else_body);
     }
 | statement ';' { $$.nd = $1.nd; }
 | PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
@@ -120,7 +157,7 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' '{' body '}' {
 
 printparam: valcharbool { 
     $$.nd = $1.nd;  
-    sprintf(icg[ic_idx++], "\nPARAM %s\n", $1.name);
+    sprintf(icg[ic_idx++], "PARAM %s\n", $1.name);
 }
 | STR { $$.nd = mknode(NULL, NULL, $1.name,0); sprintf(icg[ic_idx++], "\n t0 = %s\n PARAM t0\n", $1.name); }
 
@@ -128,7 +165,65 @@ else: ELSE {add('K');} '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name,0); }
 |  { $$.nd = NULL; }
 ;
 
-condition: valcharbool relop valcharbool { 
+M: { 
+    $$.next_quad = ic_idx; 
+    char new1[100];
+    sprintf(new1, "%d:\n", ic_idx);
+    char new2[100];
+    sprintf(new2, "LABEL S");
+    strcat(new2, new1);
+    strcpy(icg[ic_idx], new2);
+ };
+
+condition: condition AND M condition {
+    $$.nd = mknode($1.nd, $4.nd, "AND",0);
+    for (int i = 0; i < $1.tlistsize; i++) {
+        char chumma[10];
+        sprintf(chumma, "%d\n", $3.next_quad);
+        char chumma2[100];
+        sprintf(chumma2,"GOTO S");
+        strcat(chumma2,chumma);
+        printf("%s\n",chumma2);
+        strcat(icg[$1.tlist[i]], chumma2);
+    }
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    for (int i = 0; i < $4.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $4.tlist[i];
+    }
+    for (int i = 0; i < $1.flistsize; i++) {
+        $$.flist[$$.flistsize++] = $1.flist[i];
+    }
+    for(int i=0;i<$4.flistsize;i++){
+        $$.flist[$$.flistsize++] = $4.flist[i];
+    }
+}
+| condition OR M condition {
+    $$.nd = mknode($1.nd, $4.nd, "OR",0);
+    for (int i = 0; i < $1.flistsize; i++) {
+        char chumma[10];
+        sprintf(chumma, "%d\n", $3.next_quad);
+        printf("chumma %s\n",chumma);
+        char chumma2[100];
+        sprintf(chumma2,"GOTO S");
+        strcat(chumma2,chumma);
+        printf("%s\n",chumma2);
+        strcat(icg[$1.flist[i]], chumma2);
+    }
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    for (int i = 0; i < $1.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $1.tlist[i];
+    }
+    for (int i = 0; i < $4.tlistsize; i++) {
+        $$.tlist[$$.tlistsize++] = $4.tlist[i];
+    }
+    for(int i=0;i<$4.flistsize;i++){
+        $$.flist[$$.flistsize++] = $4.flist[i];
+    }
+}
+| valcharbool relop valcharbool {
+    // printf("otha over da\n"); 
     if(strcmp($1.type,$3.type)){
         success=0;
         sprintf(errors[sem_errors], "Line %d: Conflicting type operations \n", line_no);
@@ -138,14 +233,17 @@ condition: valcharbool relop valcharbool {
     $$.nd = mknode($1.nd, $3.nd, $2.name,0);  
     if(is_for) {
 		sprintf($$.if_body, "L%d", label++);
-		sprintf(icg[ic_idx++], "\nLABEL %s:\n", $$.if_body);
-		sprintf(icg[ic_idx++], "\nif NOT (%s %s %s) GOTO L%d\n", $1.name, $2.name, $3.name, label);
+		sprintf(icg[ic_idx++], "LABEL %s:\n", $$.if_body);
+		sprintf(icg[ic_idx++], "if NOT (%s %s %s) GOTO L%d\n", $1.name, $2.name, $3.name, label);
 		sprintf($$.else_body, "L%d", label++);
 	} else {
-		sprintf(icg[ic_idx++], "\nif (%s %s %s) GOTO L%d else GOTO L%d\n", $1.name, $2.name, $3.name, label, label+1);
-		sprintf($$.if_body, "L%d", label++);
-		sprintf($$.else_body, "L%d", label++);
-        sprintf($$.after_else_body, "L%d", label++);
+        char ifstt[400];
+        sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
+		strcat(icg[ic_idx++], ifstt);
+        $$.tlistsize = 0;
+        $$.flistsize = 0;
+        $$.tlist[$$.tlistsize++] = ic_idx-1;
+        $$.flist[$$.flistsize++] = ic_idx++;
 	}
 }
 | TRUE {add('K');} { $$.nd = NULL; strcpy($$.type,"boolean"); }
@@ -349,7 +447,7 @@ int main() {
     printf("\n\n");
 	printf("INTERMEDIATE CODE GENERATION \n\n");
 	for(int i=0; i<ic_idx; i++){
-		printf("%s", icg[i]);
+		printf("%s",icg[i]);
 	}
 	printf("\n\n");
 

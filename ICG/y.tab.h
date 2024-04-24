@@ -131,7 +131,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 58 "toylangparser.y"
+#line 59 "toylangparser.y"
  
 	struct var_name { 
 		char name[100]; 
@@ -153,10 +153,19 @@ union YYSTYPE
         char if_body[5];
         char else_body[5];
         char after_else_body[5];
+        int tlist[10];
+        int tlistsize;
+        int flistsize;
+        int flist[10];
         float value;
+        int index_in_icg;
     } nd_obj3;
 
-#line 160 "y.tab.h"
+    struct var_name4{
+        int next_quad;
+    } nd_obj4;
+
+#line 169 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
