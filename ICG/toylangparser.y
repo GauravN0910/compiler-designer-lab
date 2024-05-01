@@ -95,7 +95,7 @@
 }
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
-%type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam
+%type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam input
 %type <nd_obj2> init value expression term factor base charbool valcharbool bools array assign
 %type <nd_obj3> condition args typeArgs
 %type <nd_obj4> M
@@ -166,7 +166,7 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
     }
 | statement ';' { $$.nd = $1.nd; }
 | PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
-| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);
+| SCANFF {add('K');} '(' STR ',' '&' input { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);
     sprintf(icg[ic_idx++],"t%d = %s\n",temp_var++,$4.name);
     sprintf(icg[ic_idx++],"PARAM t%d\n",temp_var-1);
     sprintf(icg[ic_idx++],"PARAM %s\n",$7.name);
@@ -183,6 +183,14 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
 	sprintf(icg[ic_idx++], "CALL: %s\n", $1.name);
 }
 ;
+
+input : ID {
+    strcpy($$.name,$1.name);
+}
+| array {
+    is_array=0;
+    sprintf($$.name,"u%d",$1.temp_arr_var);
+}
 
 typeArgs : datatype ID {
     symbol_table[count].id_name=strdup($2.name);

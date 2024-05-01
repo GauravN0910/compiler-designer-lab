@@ -33,5 +33,10 @@ boolean main() {
     remember number arr[10];
     remember number n = 0;
     take("Enter the number of elements", &n);
+    remember number counter = 0;
+    checktill (counter < n){
+        take("Enter value", &arr[counter]);
+        counter = counter + 1;
+    }
     quickSort(arr, 0, n - 1);    
 }

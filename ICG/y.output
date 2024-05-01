@@ -1,8 +1,8 @@
 State 59 conflicts: 1 shift/reduce, 1 reduce/reduce
 State 74 conflicts: 1 reduce/reduce
 State 109 conflicts: 1 reduce/reduce
-State 150 conflicts: 2 shift/reduce
-State 151 conflicts: 2 shift/reduce
+State 152 conflicts: 2 shift/reduce
+State 153 conflicts: 2 shift/reduce
 
 
 Grammar
@@ -47,162 +47,165 @@ Grammar
 
    22 $@9: ε
 
-   23 block: SCANFF $@8 '(' STR ',' '&' ID $@9 ')' ';'
+   23 block: SCANFF $@8 '(' STR ',' '&' input $@9 ')' ';'
    24      | ID '(' args ')' ';'
 
-   25 $@10: ε
+   25 input: ID
+   26      | array
 
-   26 typeArgs: datatype ID $@10 ',' typeArgs
-   27         | datatype ID
-   28         | ε
+   27 $@10: ε
 
-   29 args: expression ',' args
-   30     | value ',' args
-   31     | expression
-   32     | value
-   33     | ε
+   28 typeArgs: datatype ID $@10 ',' typeArgs
+   29         | datatype ID
+   30         | ε
 
-   34 printparam: valcharbool
-   35           | STR
+   31 args: expression ',' args
+   32     | value ',' args
+   33     | expression
+   34     | value
+   35     | ε
 
-   36 $@11: ε
+   36 printparam: valcharbool
+   37           | STR
 
-   37 else: ELSE $@11 '{' body '}'
-   38     | ε
+   38 $@11: ε
 
-   39 M: ε
+   39 else: ELSE $@11 '{' body '}'
+   40     | ε
 
-   40 condition: condition AND M condition
-   41          | condition OR M condition
-   42          | valcharbool relop valcharbool
-   43          | '(' condition ')'
+   41 M: ε
 
-   44 $@12: ε
+   42 condition: condition AND M condition
+   43          | condition OR M condition
+   44          | valcharbool relop valcharbool
+   45          | '(' condition ')'
 
-   45 condition: TRUE $@12
+   46 $@12: ε
 
-   46 $@13: ε
+   47 condition: TRUE $@12
 
-   47 condition: FALSE $@13
+   48 $@13: ε
 
-   48 $@14: ε
+   49 condition: FALSE $@13
 
-   49 statement: DECLARE datatype ID $@14 init
+   50 $@14: ε
 
-   50 $@15: ε
+   51 statement: DECLARE datatype ID $@14 init
 
-   51 statement: ID $@15 '=' assign
+   52 $@15: ε
 
-   52 $@16: ε
+   53 statement: ID $@15 '=' assign
 
-   53 statement: ID $@16 relop expression
-   54          | array '=' expression
-   55          | array '=' array
+   54 $@16: ε
 
-   56 assign: expression
-   57       | array
-   58       | ID '(' args ')'
+   55 statement: ID $@16 relop expression
+   56          | array '=' expression
+   57          | array '=' array
 
-   59 init: '=' charbool
-   60     | '=' expression
-   61     | '[' NUMBER ']'
+   58 assign: expression
+   59       | array
+   60       | ID '(' args ')'
 
-   62 expression: expression addops term
-   63           | term
+   61 init: '=' charbool
+   62     | '=' expression
+   63     | '[' NUMBER ']'
 
-   64 term: term mulops factor
-   65     | factor
+   64 expression: expression addops term
+   65           | term
 
-   66 factor: base exponent base
-   67       | LOG '(' value ',' value ')'
-   68       | base
+   66 term: term mulops factor
+   67     | factor
 
-   69 base: value
-   70     | '(' expression ')'
+   68 factor: base exponent base
+   69       | LOG '(' value ',' value ')'
+   70       | base
 
-   71 exponent: POW
+   71 base: value
+   72     | '(' expression ')'
 
-   72 mulops: MULTIPLY
-   73       | DIVIDE
+   73 exponent: POW
 
-   74 addops: ADD
-   75       | SUBTRACT
+   74 mulops: MULTIPLY
+   75       | DIVIDE
 
-   76 relop: LT
-   77      | GT
-   78      | LTE
-   79      | GTE
-   80      | EQ
-   81      | NE
+   76 addops: ADD
+   77       | SUBTRACT
 
-   82 value: NUMBER
-   83      | FLOAT_NUM
-   84      | ID
-   85      | array
+   78 relop: LT
+   79      | GT
+   80      | LTE
+   81      | GTE
+   82      | EQ
+   83      | NE
 
-   86 array: ID '[' expression ']'
+   84 value: NUMBER
+   85      | FLOAT_NUM
+   86      | ID
+   87      | array
 
-   87 charbool: bools
-   88         | CHARACTER
+   88 array: ID '[' expression ']'
 
-   89 valcharbool: value
-   90            | charbool
+   89 charbool: bools
+   90         | CHARACTER
 
-   91 bools: TRUE
-   92      | FALSE
+   91 valcharbool: value
+   92            | charbool
 
-   93 $@17: ε
+   93 bools: TRUE
+   94      | FALSE
 
-   94 return: RETURN $@17 valcharbool ';'
-   95       | ε
+   95 $@17: ε
+
+   96 return: RETURN $@17 valcharbool ';'
+   97       | ε
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     '&' (38) 23
-    '(' (40) 2 13 17 20 23 24 43 58 67 70
-    ')' (41) 2 13 17 20 23 24 43 58 67 70
-    ',' (44) 23 26 29 30 67
-    ';' (59) 18 20 23 24 94
-    '=' (61) 51 54 55 59 60
-    '[' (91) 61 86
-    ']' (93) 61 86
-    '{' (123) 2 13 17 37
-    '}' (125) 2 13 17 37
+    '(' (40) 2 13 17 20 23 24 45 60 69 72
+    ')' (41) 2 13 17 20 23 24 45 60 69 72
+    ',' (44) 23 28 31 32 69
+    ';' (59) 18 20 23 24 96
+    '=' (61) 53 56 57 61 62
+    '[' (91) 63 88
+    ']' (93) 63 88
+    '{' (123) 2 13 17 39
+    '}' (125) 2 13 17 39
     error (256)
     PRINTFF <nd_obj> (258) 20
     SCANFF <nd_obj> (259) 23
     IF <nd_obj> (260) 17
-    ELSE <nd_obj> (261) 37
+    ELSE <nd_obj> (261) 39
     WHILE <nd_obj> (262) 13
-    RETURN <nd_obj> (263) 94
-    DECLARE <nd_obj> (264) 49
-    ADD <nd_obj> (265) 74
-    SUBTRACT <nd_obj> (266) 75
-    MULTIPLY <nd_obj> (267) 72
-    DIVIDE <nd_obj> (268) 73
-    LOG <nd_obj> (269) 67
-    POW <nd_obj> (270) 71
-    GTE <nd_obj> (271) 79
-    LTE <nd_obj> (272) 78
-    GT <nd_obj> (273) 77
-    LT <nd_obj> (274) 76
-    EQ <nd_obj> (275) 80
-    NE <nd_obj> (276) 81
-    TRUE <nd_obj> (277) 45 91
-    FALSE <nd_obj> (278) 47 92
-    AND <nd_obj> (279) 40
-    OR <nd_obj> (280) 41
+    RETURN <nd_obj> (263) 96
+    DECLARE <nd_obj> (264) 51
+    ADD <nd_obj> (265) 76
+    SUBTRACT <nd_obj> (266) 77
+    MULTIPLY <nd_obj> (267) 74
+    DIVIDE <nd_obj> (268) 75
+    LOG <nd_obj> (269) 69
+    POW <nd_obj> (270) 73
+    GTE <nd_obj> (271) 81
+    LTE <nd_obj> (272) 80
+    GT <nd_obj> (273) 79
+    LT <nd_obj> (274) 78
+    EQ <nd_obj> (275) 82
+    NE <nd_obj> (276) 83
+    TRUE <nd_obj> (277) 47 93
+    FALSE <nd_obj> (278) 49 94
+    AND <nd_obj> (279) 42
+    OR <nd_obj> (280) 43
     INT <nd_obj> (281) 5
     FLOAT <nd_obj> (282) 6
     CHAR <nd_obj> (283) 7
     BOOL <nd_obj> (284) 8
-    NUMBER <nd_obj> (285) 61 82
-    FLOAT_NUM <nd_obj> (286) 83
-    ID <nd_obj> (287) 4 23 24 26 27 49 51 53 58 84 86
-    STR <nd_obj> (288) 23 35
-    CHARACTER <nd_obj> (289) 88
+    NUMBER <nd_obj> (285) 63 84
+    FLOAT_NUM <nd_obj> (286) 85
+    ID <nd_obj> (287) 4 24 25 28 29 51 53 55 60 86 88
+    STR <nd_obj> (288) 23 37
+    CHARACTER <nd_obj> (289) 90
 
 
 Nonterminals, with rules where they appear
@@ -220,10 +223,10 @@ Nonterminals, with rules where they appear
         on right: 2
     datatype <nd_obj> (49)
         on left: 5 6 7 8
-        on right: 4 26 27 49
+        on right: 4 28 29 51
     body <nd_obj> (50)
         on left: 9 10
-        on right: 2 9 13 17 37
+        on right: 2 9 13 17 39
     block <nd_obj> (51)
         on left: 13 17 18 20 23 24
         on right: 9
@@ -251,99 +254,102 @@ Nonterminals, with rules where they appear
     $@9 (59)
         on left: 22
         on right: 23
-    typeArgs <nd_obj3> (60)
-        on left: 26 27 28
-        on right: 2 26
-    $@10 (61)
-        on left: 25
-        on right: 26
-    args <nd_obj3> (62)
-        on left: 29 30 31 32 33
-        on right: 24 29 30 58
-    printparam <nd_obj> (63)
-        on left: 34 35
+    input <nd_obj> (60)
+        on left: 25 26
+        on right: 23
+    typeArgs <nd_obj3> (61)
+        on left: 28 29 30
+        on right: 2 28
+    $@10 (62)
+        on left: 27
+        on right: 28
+    args <nd_obj3> (63)
+        on left: 31 32 33 34 35
+        on right: 24 31 32 60
+    printparam <nd_obj> (64)
+        on left: 36 37
         on right: 20
-    else <nd_obj> (64)
-        on left: 37 38
+    else <nd_obj> (65)
+        on left: 39 40
         on right: 17
-    $@11 (65)
-        on left: 36
-        on right: 37
-    M <nd_obj4> (66)
-        on left: 39
-        on right: 40 41
-    condition <nd_obj3> (67)
-        on left: 40 41 42 43 45 47
-        on right: 13 17 40 41 43
-    $@12 (68)
-        on left: 44
-        on right: 45
-    $@13 (69)
+    $@11 (66)
+        on left: 38
+        on right: 39
+    M <nd_obj4> (67)
+        on left: 41
+        on right: 42 43
+    condition <nd_obj3> (68)
+        on left: 42 43 44 45 47 49
+        on right: 13 17 42 43 45
+    $@12 (69)
         on left: 46
         on right: 47
-    statement <nd_obj> (70)
-        on left: 49 51 53 54 55
-        on right: 18
-    $@14 (71)
+    $@13 (70)
         on left: 48
         on right: 49
-    $@15 (72)
+    statement <nd_obj> (71)
+        on left: 51 53 55 56 57
+        on right: 18
+    $@14 (72)
         on left: 50
         on right: 51
-    $@16 (73)
+    $@15 (73)
         on left: 52
         on right: 53
-    assign <nd_obj2> (74)
-        on left: 56 57 58
+    $@16 (74)
+        on left: 54
+        on right: 55
+    assign <nd_obj2> (75)
+        on left: 58 59 60
+        on right: 53
+    init <nd_obj2> (76)
+        on left: 61 62 63
         on right: 51
-    init <nd_obj2> (75)
-        on left: 59 60 61
-        on right: 49
-    expression <nd_obj2> (76)
-        on left: 62 63
-        on right: 29 31 53 54 56 60 62 70 86
-    term <nd_obj2> (77)
+    expression <nd_obj2> (77)
         on left: 64 65
-        on right: 62 63 64
-    factor <nd_obj2> (78)
-        on left: 66 67 68
-        on right: 64 65
-    base <nd_obj2> (79)
-        on left: 69 70
-        on right: 66 68
-    exponent <nd_obj> (80)
-        on left: 71
-        on right: 66
-    mulops <nd_obj> (81)
-        on left: 72 73
-        on right: 64
-    addops <nd_obj> (82)
+        on right: 31 33 55 56 58 62 64 72 88
+    term <nd_obj2> (78)
+        on left: 66 67
+        on right: 64 65 66
+    factor <nd_obj2> (79)
+        on left: 68 69 70
+        on right: 66 67
+    base <nd_obj2> (80)
+        on left: 71 72
+        on right: 68 70
+    exponent <nd_obj> (81)
+        on left: 73
+        on right: 68
+    mulops <nd_obj> (82)
         on left: 74 75
-        on right: 62
-    relop <nd_obj> (83)
-        on left: 76 77 78 79 80 81
-        on right: 42 53
-    value <nd_obj2> (84)
-        on left: 82 83 84 85
-        on right: 30 32 67 69 89
-    array <nd_obj2> (85)
-        on left: 86
-        on right: 54 55 57 85
-    charbool <nd_obj2> (86)
-        on left: 87 88
-        on right: 59 90
-    valcharbool <nd_obj2> (87)
+        on right: 66
+    addops <nd_obj> (83)
+        on left: 76 77
+        on right: 64
+    relop <nd_obj> (84)
+        on left: 78 79 80 81 82 83
+        on right: 44 55
+    value <nd_obj2> (85)
+        on left: 84 85 86 87
+        on right: 32 34 69 71 91
+    array <nd_obj2> (86)
+        on left: 88
+        on right: 26 56 57 59 87
+    charbool <nd_obj2> (87)
         on left: 89 90
-        on right: 34 42 94
-    bools <nd_obj2> (88)
+        on right: 61 92
+    valcharbool <nd_obj2> (88)
         on left: 91 92
-        on right: 87
-    return <nd_obj> (89)
-        on left: 94 95
+        on right: 36 44 96
+    bools <nd_obj2> (89)
+        on left: 93 94
+        on right: 89
+    return <nd_obj> (90)
+        on left: 96 97
         on right: 2
-    $@17 (90)
-        on left: 93
-        on right: 94
+    $@17 (91)
+        on left: 95
+        on right: 96
 
 
 State 0
@@ -427,7 +433,7 @@ State 9
     CHAR   shift, and go to state 3
     BOOL   shift, and go to state 4
 
-    $default  reduce using rule 28 (typeArgs)
+    $default  reduce using rule 30 (typeArgs)
 
     datatype  go to state 11
     typeArgs  go to state 12
@@ -442,8 +448,8 @@ State 10
 
 State 11
 
-   26 typeArgs: datatype • ID $@10 ',' typeArgs
-   27         | datatype • ID
+   28 typeArgs: datatype • ID $@10 ',' typeArgs
+   29         | datatype • ID
 
     ID  shift, and go to state 13
 
@@ -457,11 +463,11 @@ State 12
 
 State 13
 
-   26 typeArgs: datatype ID • $@10 ',' typeArgs
-   27         | datatype ID •
+   28 typeArgs: datatype ID • $@10 ',' typeArgs
+   29         | datatype ID •
 
-    ')'       reduce using rule 27 (typeArgs)
-    $default  reduce using rule 25 ($@10)
+    ')'       reduce using rule 29 (typeArgs)
+    $default  reduce using rule 27 ($@10)
 
     $@10  go to state 15
 
@@ -477,7 +483,7 @@ State 14
 
 State 15
 
-   26 typeArgs: datatype ID $@10 • ',' typeArgs
+   28 typeArgs: datatype ID $@10 • ',' typeArgs
 
     ','  shift, and go to state 17
 
@@ -491,14 +497,14 @@ State 16
 
 State 17
 
-   26 typeArgs: datatype ID $@10 ',' • typeArgs
+   28 typeArgs: datatype ID $@10 ',' • typeArgs
 
     INT    shift, and go to state 1
     FLOAT  shift, and go to state 2
     CHAR   shift, and go to state 3
     BOOL   shift, and go to state 4
 
-    $default  reduce using rule 28 (typeArgs)
+    $default  reduce using rule 30 (typeArgs)
 
     datatype  go to state 11
     typeArgs  go to state 19
@@ -525,9 +531,9 @@ State 18
 
 State 19
 
-   26 typeArgs: datatype ID $@10 ',' typeArgs •
+   28 typeArgs: datatype ID $@10 ',' typeArgs •
 
-    $default  reduce using rule 26 (typeArgs)
+    $default  reduce using rule 28 (typeArgs)
 
 
 State 20
@@ -541,7 +547,7 @@ State 20
 
 State 21
 
-   23 block: SCANFF • $@8 '(' STR ',' '&' ID $@9 ')' ';'
+   23 block: SCANFF • $@8 '(' STR ',' '&' input $@9 ')' ';'
 
     $default  reduce using rule 21 ($@8)
 
@@ -568,7 +574,7 @@ State 23
 
 State 24
 
-   49 statement: DECLARE • datatype ID $@14 init
+   51 statement: DECLARE • datatype ID $@14 init
 
     INT    shift, and go to state 1
     FLOAT  shift, and go to state 2
@@ -581,15 +587,15 @@ State 24
 State 25
 
    24 block: ID • '(' args ')' ';'
-   51 statement: ID • $@15 '=' assign
-   53          | ID • $@16 relop expression
-   86 array: ID • '[' expression ']'
+   53 statement: ID • $@15 '=' assign
+   55          | ID • $@16 relop expression
+   88 array: ID • '[' expression ']'
 
     '('  shift, and go to state 35
     '['  shift, and go to state 36
 
-    '='       reduce using rule 50 ($@15)
-    $default  reduce using rule 52 ($@16)
+    '='       reduce using rule 52 ($@15)
+    $default  reduce using rule 54 ($@16)
 
     $@15  go to state 37
     $@16  go to state 38
@@ -601,7 +607,7 @@ State 26
 
     RETURN  shift, and go to state 39
 
-    $default  reduce using rule 95 (return)
+    $default  reduce using rule 97 (return)
 
     return  go to state 40
 
@@ -634,8 +640,8 @@ State 28
 
 State 29
 
-   54 statement: array • '=' expression
-   55          | array • '=' array
+   56 statement: array • '=' expression
+   57          | array • '=' array
 
     '='  shift, and go to state 43
 
@@ -649,7 +655,7 @@ State 30
 
 State 31
 
-   23 block: SCANFF $@8 • '(' STR ',' '&' ID $@9 ')' ';'
+   23 block: SCANFF $@8 • '(' STR ',' '&' input $@9 ')' ';'
 
     '('  shift, and go to state 45
 
@@ -670,7 +676,7 @@ State 33
 
 State 34
 
-   49 statement: DECLARE datatype • ID $@14 init
+   51 statement: DECLARE datatype • ID $@14 init
 
     ID  shift, and go to state 48
 
@@ -685,7 +691,7 @@ State 35
     ID         shift, and go to state 52
     '('        shift, and go to state 53
 
-    $default  reduce using rule 33 (args)
+    $default  reduce using rule 35 (args)
 
     args        go to state 54
     expression  go to state 55
@@ -698,7 +704,7 @@ State 35
 
 State 36
 
-   86 array: ID '[' • expression ']'
+   88 array: ID '[' • expression ']'
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -716,14 +722,14 @@ State 36
 
 State 37
 
-   51 statement: ID $@15 • '=' assign
+   53 statement: ID $@15 • '=' assign
 
     '='  shift, and go to state 63
 
 
 State 38
 
-   53 statement: ID $@16 • relop expression
+   55 statement: ID $@16 • relop expression
 
     GTE  shift, and go to state 64
     LTE  shift, and go to state 65
@@ -737,9 +743,9 @@ State 38
 
 State 39
 
-   94 return: RETURN • $@17 valcharbool ';'
+   96 return: RETURN • $@17 valcharbool ';'
 
-    $default  reduce using rule 93 ($@17)
+    $default  reduce using rule 95 ($@17)
 
     $@17  go to state 71
 
@@ -767,8 +773,8 @@ State 42
 
 State 43
 
-   54 statement: array '=' • expression
-   55          | array '=' • array
+   56 statement: array '=' • expression
+   57          | array '=' • array
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -806,7 +812,7 @@ State 44
 
 State 45
 
-   23 block: SCANFF $@8 '(' • STR ',' '&' ID $@9 ')' ';'
+   23 block: SCANFF $@8 '(' • STR ',' '&' input $@9 ')' ';'
 
     STR  shift, and go to state 84
 
@@ -853,47 +859,47 @@ State 47
 
 State 48
 
-   49 statement: DECLARE datatype ID • $@14 init
+   51 statement: DECLARE datatype ID • $@14 init
 
-    $default  reduce using rule 48 ($@14)
+    $default  reduce using rule 50 ($@14)
 
     $@14  go to state 91
 
 
 State 49
 
-   67 factor: LOG • '(' value ',' value ')'
+   69 factor: LOG • '(' value ',' value ')'
 
     '('  shift, and go to state 92
 
 
 State 50
 
-   82 value: NUMBER •
-
-    $default  reduce using rule 82 (value)
-
-
-State 51
-
-   83 value: FLOAT_NUM •
-
-    $default  reduce using rule 83 (value)
-
-
-State 52
-
-   84 value: ID •
-   86 array: ID • '[' expression ']'
-
-    '['  shift, and go to state 36
+   84 value: NUMBER •
 
     $default  reduce using rule 84 (value)
 
 
+State 51
+
+   85 value: FLOAT_NUM •
+
+    $default  reduce using rule 85 (value)
+
+
+State 52
+
+   86 value: ID •
+   88 array: ID • '[' expression ']'
+
+    '['  shift, and go to state 36
+
+    $default  reduce using rule 86 (value)
+
+
 State 53
 
-   70 base: '(' • expression ')'
+   72 base: '(' • expression ')'
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -918,76 +924,76 @@ State 54
 
 State 55
 
-   29 args: expression • ',' args
-   31     | expression •
-   62 expression: expression • addops term
+   31 args: expression • ',' args
+   33     | expression •
+   64 expression: expression • addops term
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
     ','       shift, and go to state 97
 
-    $default  reduce using rule 31 (args)
+    $default  reduce using rule 33 (args)
 
     addops  go to state 98
 
 
 State 56
 
-   63 expression: term •
-   64 term: term • mulops factor
+   65 expression: term •
+   66 term: term • mulops factor
 
     MULTIPLY  shift, and go to state 99
     DIVIDE    shift, and go to state 100
 
-    $default  reduce using rule 63 (expression)
+    $default  reduce using rule 65 (expression)
 
     mulops  go to state 101
 
 
 State 57
 
-   65 term: factor •
+   67 term: factor •
 
-    $default  reduce using rule 65 (term)
+    $default  reduce using rule 67 (term)
 
 
 State 58
 
-   66 factor: base • exponent base
-   68       | base •
+   68 factor: base • exponent base
+   70       | base •
 
     POW  shift, and go to state 102
 
-    $default  reduce using rule 68 (factor)
+    $default  reduce using rule 70 (factor)
 
     exponent  go to state 103
 
 
 State 59
 
-   30 args: value • ',' args
-   32     | value •
-   69 base: value •
+   32 args: value • ',' args
+   34     | value •
+   71 base: value •
 
     ','  shift, and go to state 104
 
-    ')'       reduce using rule 32 (args)
-    ')'       [reduce using rule 69 (base)]
-    ','       [reduce using rule 69 (base)]
-    $default  reduce using rule 69 (base)
+    ')'       reduce using rule 34 (args)
+    ')'       [reduce using rule 71 (base)]
+    ','       [reduce using rule 71 (base)]
+    $default  reduce using rule 71 (base)
 
 
 State 60
 
-   85 value: array •
+   87 value: array •
 
-    $default  reduce using rule 85 (value)
+    $default  reduce using rule 87 (value)
 
 
 State 61
 
-   62 expression: expression • addops term
-   86 array: ID '[' expression • ']'
+   64 expression: expression • addops term
+   88 array: ID '[' expression • ']'
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
@@ -998,14 +1004,14 @@ State 61
 
 State 62
 
-   69 base: value •
+   71 base: value •
 
-    $default  reduce using rule 69 (base)
+    $default  reduce using rule 71 (base)
 
 
 State 63
 
-   51 statement: ID $@15 '=' • assign
+   53 statement: ID $@15 '=' • assign
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1024,49 +1030,49 @@ State 63
 
 State 64
 
-   79 relop: GTE •
-
-    $default  reduce using rule 79 (relop)
-
-
-State 65
-
-   78 relop: LTE •
-
-    $default  reduce using rule 78 (relop)
-
-
-State 66
-
-   77 relop: GT •
-
-    $default  reduce using rule 77 (relop)
-
-
-State 67
-
-   76 relop: LT •
-
-    $default  reduce using rule 76 (relop)
-
-
-State 68
-
-   80 relop: EQ •
-
-    $default  reduce using rule 80 (relop)
-
-
-State 69
-
-   81 relop: NE •
+   81 relop: GTE •
 
     $default  reduce using rule 81 (relop)
 
 
+State 65
+
+   80 relop: LTE •
+
+    $default  reduce using rule 80 (relop)
+
+
+State 66
+
+   79 relop: GT •
+
+    $default  reduce using rule 79 (relop)
+
+
+State 67
+
+   78 relop: LT •
+
+    $default  reduce using rule 78 (relop)
+
+
+State 68
+
+   82 relop: EQ •
+
+    $default  reduce using rule 82 (relop)
+
+
+State 69
+
+   83 relop: NE •
+
+    $default  reduce using rule 83 (relop)
+
+
 State 70
 
-   53 statement: ID $@16 relop • expression
+   55 statement: ID $@16 relop • expression
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1084,7 +1090,7 @@ State 70
 
 State 71
 
-   94 return: RETURN $@17 • valcharbool ';'
+   96 return: RETURN $@17 • valcharbool ';'
 
     TRUE       shift, and go to state 75
     FALSE      shift, and go to state 76
@@ -1118,53 +1124,53 @@ State 72
 
 State 73
 
-   54 statement: array '=' expression •
-   62 expression: expression • addops term
+   56 statement: array '=' expression •
+   64 expression: expression • addops term
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
 
-    $default  reduce using rule 54 (statement)
+    $default  reduce using rule 56 (statement)
 
     addops  go to state 98
 
 
 State 74
 
-   55 statement: array '=' array •
-   85 value: array •
+   57 statement: array '=' array •
+   87 value: array •
 
-    ';'       reduce using rule 55 (statement)
-    ';'       [reduce using rule 85 (value)]
-    $default  reduce using rule 85 (value)
+    ';'       reduce using rule 57 (statement)
+    ';'       [reduce using rule 87 (value)]
+    $default  reduce using rule 87 (value)
 
 
 State 75
 
-   91 bools: TRUE •
+   93 bools: TRUE •
 
-    $default  reduce using rule 91 (bools)
+    $default  reduce using rule 93 (bools)
 
 
 State 76
 
-   92 bools: FALSE •
+   94 bools: FALSE •
 
-    $default  reduce using rule 92 (bools)
+    $default  reduce using rule 94 (bools)
 
 
 State 77
 
-   35 printparam: STR •
+   37 printparam: STR •
 
-    $default  reduce using rule 35 (printparam)
+    $default  reduce using rule 37 (printparam)
 
 
 State 78
 
-   88 charbool: CHARACTER •
+   90 charbool: CHARACTER •
 
-    $default  reduce using rule 88 (charbool)
+    $default  reduce using rule 90 (charbool)
 
 
 State 79
@@ -1176,68 +1182,68 @@ State 79
 
 State 80
 
-   89 valcharbool: value •
+   91 valcharbool: value •
 
-    $default  reduce using rule 89 (valcharbool)
+    $default  reduce using rule 91 (valcharbool)
 
 
 State 81
 
-   90 valcharbool: charbool •
+   92 valcharbool: charbool •
 
-    $default  reduce using rule 90 (valcharbool)
+    $default  reduce using rule 92 (valcharbool)
 
 
 State 82
 
-   34 printparam: valcharbool •
+   36 printparam: valcharbool •
 
-    $default  reduce using rule 34 (printparam)
+    $default  reduce using rule 36 (printparam)
 
 
 State 83
 
-   87 charbool: bools •
+   89 charbool: bools •
 
-    $default  reduce using rule 87 (charbool)
+    $default  reduce using rule 89 (charbool)
 
 
 State 84
 
-   23 block: SCANFF $@8 '(' STR • ',' '&' ID $@9 ')' ';'
+   23 block: SCANFF $@8 '(' STR • ',' '&' input $@9 ')' ';'
 
     ','  shift, and go to state 114
 
 
 State 85
 
-   45 condition: TRUE • $@12
-   91 bools: TRUE •
+   47 condition: TRUE • $@12
+   93 bools: TRUE •
 
-    AND       reduce using rule 44 ($@12)
-    OR        reduce using rule 44 ($@12)
-    ')'       reduce using rule 44 ($@12)
-    $default  reduce using rule 91 (bools)
+    AND       reduce using rule 46 ($@12)
+    OR        reduce using rule 46 ($@12)
+    ')'       reduce using rule 46 ($@12)
+    $default  reduce using rule 93 (bools)
 
     $@12  go to state 115
 
 
 State 86
 
-   47 condition: FALSE • $@13
-   92 bools: FALSE •
+   49 condition: FALSE • $@13
+   94 bools: FALSE •
 
-    AND       reduce using rule 46 ($@13)
-    OR        reduce using rule 46 ($@13)
-    ')'       reduce using rule 46 ($@13)
-    $default  reduce using rule 92 (bools)
+    AND       reduce using rule 48 ($@13)
+    OR        reduce using rule 48 ($@13)
+    ')'       reduce using rule 48 ($@13)
+    $default  reduce using rule 94 (bools)
 
     $@13  go to state 116
 
 
 State 87
 
-   43 condition: '(' • condition ')'
+   45 condition: '(' • condition ')'
 
     TRUE       shift, and go to state 85
     FALSE      shift, and go to state 86
@@ -1258,8 +1264,8 @@ State 87
 State 88
 
    17 block: IF $@4 '(' condition • ')' $@5 '{' body '}' $@6 else
-   40 condition: condition • AND M condition
-   41          | condition • OR M condition
+   42 condition: condition • AND M condition
+   43          | condition • OR M condition
 
     AND  shift, and go to state 118
     OR   shift, and go to state 119
@@ -1268,7 +1274,7 @@ State 88
 
 State 89
 
-   42 condition: valcharbool • relop valcharbool
+   44 condition: valcharbool • relop valcharbool
 
     GTE  shift, and go to state 64
     LTE  shift, and go to state 65
@@ -1283,8 +1289,8 @@ State 89
 State 90
 
    13 block: WHILE $@2 '(' condition • ')' $@3 '{' body '}'
-   40 condition: condition • AND M condition
-   41          | condition • OR M condition
+   42 condition: condition • AND M condition
+   43          | condition • OR M condition
 
     AND  shift, and go to state 118
     OR   shift, and go to state 119
@@ -1293,7 +1299,7 @@ State 90
 
 State 91
 
-   49 statement: DECLARE datatype ID $@14 • init
+   51 statement: DECLARE datatype ID $@14 • init
 
     '='  shift, and go to state 123
     '['  shift, and go to state 124
@@ -1303,7 +1309,7 @@ State 91
 
 State 92
 
-   67 factor: LOG '(' • value ',' value ')'
+   69 factor: LOG '(' • value ',' value ')'
 
     NUMBER     shift, and go to state 50
     FLOAT_NUM  shift, and go to state 51
@@ -1315,8 +1321,8 @@ State 92
 
 State 93
 
-   62 expression: expression • addops term
-   70 base: '(' expression • ')'
+   64 expression: expression • addops term
+   72 base: '(' expression • ')'
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
@@ -1334,21 +1340,21 @@ State 94
 
 State 95
 
-   74 addops: ADD •
+   76 addops: ADD •
 
-    $default  reduce using rule 74 (addops)
+    $default  reduce using rule 76 (addops)
 
 
 State 96
 
-   75 addops: SUBTRACT •
+   77 addops: SUBTRACT •
 
-    $default  reduce using rule 75 (addops)
+    $default  reduce using rule 77 (addops)
 
 
 State 97
 
-   29 args: expression ',' • args
+   31 args: expression ',' • args
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1356,7 +1362,7 @@ State 97
     ID         shift, and go to state 52
     '('        shift, and go to state 53
 
-    $default  reduce using rule 33 (args)
+    $default  reduce using rule 35 (args)
 
     args        go to state 129
     expression  go to state 55
@@ -1369,7 +1375,7 @@ State 97
 
 State 98
 
-   62 expression: expression addops • term
+   64 expression: expression addops • term
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1386,21 +1392,21 @@ State 98
 
 State 99
 
-   72 mulops: MULTIPLY •
+   74 mulops: MULTIPLY •
 
-    $default  reduce using rule 72 (mulops)
+    $default  reduce using rule 74 (mulops)
 
 
 State 100
 
-   73 mulops: DIVIDE •
+   75 mulops: DIVIDE •
 
-    $default  reduce using rule 73 (mulops)
+    $default  reduce using rule 75 (mulops)
 
 
 State 101
 
-   64 term: term mulops • factor
+   66 term: term mulops • factor
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1416,14 +1422,14 @@ State 101
 
 State 102
 
-   71 exponent: POW •
+   73 exponent: POW •
 
-    $default  reduce using rule 71 (exponent)
+    $default  reduce using rule 73 (exponent)
 
 
 State 103
 
-   66 factor: base exponent • base
+   68 factor: base exponent • base
 
     NUMBER     shift, and go to state 50
     FLOAT_NUM  shift, and go to state 51
@@ -1437,7 +1443,7 @@ State 103
 
 State 104
 
-   30 args: value ',' • args
+   32 args: value ',' • args
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1445,7 +1451,7 @@ State 104
     ID         shift, and go to state 52
     '('        shift, and go to state 53
 
-    $default  reduce using rule 33 (args)
+    $default  reduce using rule 35 (args)
 
     args        go to state 133
     expression  go to state 55
@@ -1458,69 +1464,69 @@ State 104
 
 State 105
 
-   86 array: ID '[' expression ']' •
+   88 array: ID '[' expression ']' •
 
-    $default  reduce using rule 86 (array)
+    $default  reduce using rule 88 (array)
 
 
 State 106
 
-   58 assign: ID • '(' args ')'
-   84 value: ID •
-   86 array: ID • '[' expression ']'
+   60 assign: ID • '(' args ')'
+   86 value: ID •
+   88 array: ID • '[' expression ']'
 
     '('  shift, and go to state 134
     '['  shift, and go to state 36
 
-    $default  reduce using rule 84 (value)
+    $default  reduce using rule 86 (value)
 
 
 State 107
 
-   51 statement: ID $@15 '=' assign •
+   53 statement: ID $@15 '=' assign •
 
-    $default  reduce using rule 51 (statement)
+    $default  reduce using rule 53 (statement)
 
 
 State 108
 
-   56 assign: expression •
-   62 expression: expression • addops term
+   58 assign: expression •
+   64 expression: expression • addops term
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
 
-    $default  reduce using rule 56 (assign)
+    $default  reduce using rule 58 (assign)
 
     addops  go to state 98
 
 
 State 109
 
-   57 assign: array •
-   85 value: array •
+   59 assign: array •
+   87 value: array •
 
-    ';'       reduce using rule 57 (assign)
-    ';'       [reduce using rule 85 (value)]
-    $default  reduce using rule 85 (value)
+    ';'       reduce using rule 59 (assign)
+    ';'       [reduce using rule 87 (value)]
+    $default  reduce using rule 87 (value)
 
 
 State 110
 
-   53 statement: ID $@16 relop expression •
-   62 expression: expression • addops term
+   55 statement: ID $@16 relop expression •
+   64 expression: expression • addops term
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
 
-    $default  reduce using rule 53 (statement)
+    $default  reduce using rule 55 (statement)
 
     addops  go to state 98
 
 
 State 111
 
-   94 return: RETURN $@17 valcharbool • ';'
+   96 return: RETURN $@17 valcharbool • ';'
 
     ';'  shift, and go to state 135
 
@@ -1541,30 +1547,30 @@ State 113
 
 State 114
 
-   23 block: SCANFF $@8 '(' STR ',' • '&' ID $@9 ')' ';'
+   23 block: SCANFF $@8 '(' STR ',' • '&' input $@9 ')' ';'
 
     '&'  shift, and go to state 137
 
 
 State 115
 
-   45 condition: TRUE $@12 •
-
-    $default  reduce using rule 45 (condition)
-
-
-State 116
-
-   47 condition: FALSE $@13 •
+   47 condition: TRUE $@12 •
 
     $default  reduce using rule 47 (condition)
 
 
+State 116
+
+   49 condition: FALSE $@13 •
+
+    $default  reduce using rule 49 (condition)
+
+
 State 117
 
-   40 condition: condition • AND M condition
-   41          | condition • OR M condition
-   43          | '(' condition • ')'
+   42 condition: condition • AND M condition
+   43          | condition • OR M condition
+   45          | '(' condition • ')'
 
     AND  shift, and go to state 118
     OR   shift, and go to state 119
@@ -1573,18 +1579,18 @@ State 117
 
 State 118
 
-   40 condition: condition AND • M condition
+   42 condition: condition AND • M condition
 
-    $default  reduce using rule 39 (M)
+    $default  reduce using rule 41 (M)
 
     M  go to state 139
 
 
 State 119
 
-   41 condition: condition OR • M condition
+   43 condition: condition OR • M condition
 
-    $default  reduce using rule 39 (M)
+    $default  reduce using rule 41 (M)
 
     M  go to state 140
 
@@ -1600,7 +1606,7 @@ State 120
 
 State 121
 
-   42 condition: valcharbool relop • valcharbool
+   44 condition: valcharbool relop • valcharbool
 
     TRUE       shift, and go to state 75
     FALSE      shift, and go to state 76
@@ -1627,8 +1633,8 @@ State 122
 
 State 123
 
-   59 init: '=' • charbool
-   60     | '=' • expression
+   61 init: '=' • charbool
+   62     | '=' • expression
 
     LOG        shift, and go to state 49
     TRUE       shift, and go to state 75
@@ -1651,30 +1657,30 @@ State 123
 
 State 124
 
-   61 init: '[' • NUMBER ']'
+   63 init: '[' • NUMBER ']'
 
     NUMBER  shift, and go to state 146
 
 
 State 125
 
-   49 statement: DECLARE datatype ID $@14 init •
+   51 statement: DECLARE datatype ID $@14 init •
 
-    $default  reduce using rule 49 (statement)
+    $default  reduce using rule 51 (statement)
 
 
 State 126
 
-   67 factor: LOG '(' value • ',' value ')'
+   69 factor: LOG '(' value • ',' value ')'
 
     ','  shift, and go to state 147
 
 
 State 127
 
-   70 base: '(' expression ')' •
+   72 base: '(' expression ')' •
 
-    $default  reduce using rule 70 (base)
+    $default  reduce using rule 72 (base)
 
 
 State 128
@@ -1686,48 +1692,48 @@ State 128
 
 State 129
 
-   29 args: expression ',' args •
+   31 args: expression ',' args •
 
-    $default  reduce using rule 29 (args)
+    $default  reduce using rule 31 (args)
 
 
 State 130
 
-   62 expression: expression addops term •
-   64 term: term • mulops factor
+   64 expression: expression addops term •
+   66 term: term • mulops factor
 
     MULTIPLY  shift, and go to state 99
     DIVIDE    shift, and go to state 100
 
-    $default  reduce using rule 62 (expression)
+    $default  reduce using rule 64 (expression)
 
     mulops  go to state 101
 
 
 State 131
 
-   64 term: term mulops factor •
+   66 term: term mulops factor •
 
-    $default  reduce using rule 64 (term)
+    $default  reduce using rule 66 (term)
 
 
 State 132
 
-   66 factor: base exponent base •
+   68 factor: base exponent base •
 
-    $default  reduce using rule 66 (factor)
+    $default  reduce using rule 68 (factor)
 
 
 State 133
 
-   30 args: value ',' args •
+   32 args: value ',' args •
 
-    $default  reduce using rule 30 (args)
+    $default  reduce using rule 32 (args)
 
 
 State 134
 
-   58 assign: ID '(' • args ')'
+   60 assign: ID '(' • args ')'
 
     LOG        shift, and go to state 49
     NUMBER     shift, and go to state 50
@@ -1735,7 +1741,7 @@ State 134
     ID         shift, and go to state 52
     '('        shift, and go to state 53
 
-    $default  reduce using rule 33 (args)
+    $default  reduce using rule 35 (args)
 
     args        go to state 148
     expression  go to state 55
@@ -1748,9 +1754,9 @@ State 134
 
 State 135
 
-   94 return: RETURN $@17 valcharbool ';' •
+   96 return: RETURN $@17 valcharbool ';' •
 
-    $default  reduce using rule 94 (return)
+    $default  reduce using rule 96 (return)
 
 
 State 136
@@ -1762,21 +1768,24 @@ State 136
 
 State 137
 
-   23 block: SCANFF $@8 '(' STR ',' '&' • ID $@9 ')' ';'
+   23 block: SCANFF $@8 '(' STR ',' '&' • input $@9 ')' ';'
 
     ID  shift, and go to state 149
+
+    input  go to state 150
+    array  go to state 151
 
 
 State 138
 
-   43 condition: '(' condition ')' •
+   45 condition: '(' condition ')' •
 
-    $default  reduce using rule 43 (condition)
+    $default  reduce using rule 45 (condition)
 
 
 State 139
 
-   40 condition: condition AND M • condition
+   42 condition: condition AND M • condition
 
     TRUE       shift, and go to state 85
     FALSE      shift, and go to state 86
@@ -1786,7 +1795,7 @@ State 139
     CHARACTER  shift, and go to state 78
     '('        shift, and go to state 87
 
-    condition    go to state 150
+    condition    go to state 152
     value        go to state 80
     array        go to state 60
     charbool     go to state 81
@@ -1796,7 +1805,7 @@ State 139
 
 State 140
 
-   41 condition: condition OR M • condition
+   43 condition: condition OR M • condition
 
     TRUE       shift, and go to state 85
     FALSE      shift, and go to state 86
@@ -1806,7 +1815,7 @@ State 140
     CHARACTER  shift, and go to state 78
     '('        shift, and go to state 87
 
-    condition    go to state 151
+    condition    go to state 153
     value        go to state 80
     array        go to state 60
     charbool     go to state 81
@@ -1818,107 +1827,124 @@ State 141
 
    17 block: IF $@4 '(' condition ')' $@5 • '{' body '}' $@6 else
 
-    '{'  shift, and go to state 152
+    '{'  shift, and go to state 154
 
 
 State 142
 
-   42 condition: valcharbool relop valcharbool •
+   44 condition: valcharbool relop valcharbool •
 
-    $default  reduce using rule 42 (condition)
+    $default  reduce using rule 44 (condition)
 
 
 State 143
 
    13 block: WHILE $@2 '(' condition ')' $@3 • '{' body '}'
 
-    '{'  shift, and go to state 153
+    '{'  shift, and go to state 155
 
 
 State 144
 
-   60 init: '=' expression •
-   62 expression: expression • addops term
+   62 init: '=' expression •
+   64 expression: expression • addops term
 
     ADD       shift, and go to state 95
     SUBTRACT  shift, and go to state 96
 
-    $default  reduce using rule 60 (init)
+    $default  reduce using rule 62 (init)
 
     addops  go to state 98
 
 
 State 145
 
-   59 init: '=' charbool •
+   61 init: '=' charbool •
 
-    $default  reduce using rule 59 (init)
+    $default  reduce using rule 61 (init)
 
 
 State 146
 
-   61 init: '[' NUMBER • ']'
+   63 init: '[' NUMBER • ']'
 
-    ']'  shift, and go to state 154
+    ']'  shift, and go to state 156
 
 
 State 147
 
-   67 factor: LOG '(' value ',' • value ')'
+   69 factor: LOG '(' value ',' • value ')'
 
     NUMBER     shift, and go to state 50
     FLOAT_NUM  shift, and go to state 51
     ID         shift, and go to state 52
 
-    value  go to state 155
+    value  go to state 157
     array  go to state 60
 
 
 State 148
 
-   58 assign: ID '(' args • ')'
+   60 assign: ID '(' args • ')'
 
-    ')'  shift, and go to state 156
+    ')'  shift, and go to state 158
 
 
 State 149
 
-   23 block: SCANFF $@8 '(' STR ',' '&' ID • $@9 ')' ';'
+   25 input: ID •
+   88 array: ID • '[' expression ']'
 
-    $default  reduce using rule 22 ($@9)
+    '['  shift, and go to state 36
 
-    $@9  go to state 157
+    $default  reduce using rule 25 (input)
 
 
 State 150
 
-   40 condition: condition • AND M condition
-   40          | condition AND M condition •
-   41          | condition • OR M condition
+   23 block: SCANFF $@8 '(' STR ',' '&' input • $@9 ')' ';'
 
-    AND  shift, and go to state 118
-    OR   shift, and go to state 119
+    $default  reduce using rule 22 ($@9)
 
-    AND       [reduce using rule 40 (condition)]
-    OR        [reduce using rule 40 (condition)]
-    $default  reduce using rule 40 (condition)
+    $@9  go to state 159
 
 
 State 151
 
-   40 condition: condition • AND M condition
-   41          | condition • OR M condition
-   41          | condition OR M condition •
+   26 input: array •
+
+    $default  reduce using rule 26 (input)
+
+
+State 152
+
+   42 condition: condition • AND M condition
+   42          | condition AND M condition •
+   43          | condition • OR M condition
 
     AND  shift, and go to state 118
     OR   shift, and go to state 119
 
-    AND       [reduce using rule 41 (condition)]
-    OR        [reduce using rule 41 (condition)]
-    $default  reduce using rule 41 (condition)
+    AND       [reduce using rule 42 (condition)]
+    OR        [reduce using rule 42 (condition)]
+    $default  reduce using rule 42 (condition)
 
 
-State 152
+State 153
+
+   42 condition: condition • AND M condition
+   43          | condition • OR M condition
+   43          | condition OR M condition •
+
+    AND  shift, and go to state 118
+    OR   shift, and go to state 119
+
+    AND       [reduce using rule 43 (condition)]
+    OR        [reduce using rule 43 (condition)]
+    $default  reduce using rule 43 (condition)
+
+
+State 154
 
    17 block: IF $@4 '(' condition ')' $@5 '{' • body '}' $@6 else
 
@@ -1931,13 +1957,13 @@ State 152
 
     $default  reduce using rule 10 (body)
 
-    body       go to state 158
+    body       go to state 160
     block      go to state 27
     statement  go to state 28
     array      go to state 29
 
 
-State 153
+State 155
 
    13 block: WHILE $@2 '(' condition ')' $@3 '{' • body '}'
 
@@ -1950,128 +1976,128 @@ State 153
 
     $default  reduce using rule 10 (body)
 
-    body       go to state 159
+    body       go to state 161
     block      go to state 27
     statement  go to state 28
     array      go to state 29
 
 
-State 154
-
-   61 init: '[' NUMBER ']' •
-
-    $default  reduce using rule 61 (init)
-
-
-State 155
-
-   67 factor: LOG '(' value ',' value • ')'
-
-    ')'  shift, and go to state 160
-
-
 State 156
 
-   58 assign: ID '(' args ')' •
+   63 init: '[' NUMBER ']' •
 
-    $default  reduce using rule 58 (assign)
+    $default  reduce using rule 63 (init)
 
 
 State 157
 
-   23 block: SCANFF $@8 '(' STR ',' '&' ID $@9 • ')' ';'
+   69 factor: LOG '(' value ',' value • ')'
 
-    ')'  shift, and go to state 161
+    ')'  shift, and go to state 162
 
 
 State 158
 
-   17 block: IF $@4 '(' condition ')' $@5 '{' body • '}' $@6 else
+   60 assign: ID '(' args ')' •
 
-    '}'  shift, and go to state 162
+    $default  reduce using rule 60 (assign)
 
 
 State 159
 
-   13 block: WHILE $@2 '(' condition ')' $@3 '{' body • '}'
+   23 block: SCANFF $@8 '(' STR ',' '&' input $@9 • ')' ';'
 
-    '}'  shift, and go to state 163
+    ')'  shift, and go to state 163
 
 
 State 160
 
-   67 factor: LOG '(' value ',' value ')' •
+   17 block: IF $@4 '(' condition ')' $@5 '{' body • '}' $@6 else
 
-    $default  reduce using rule 67 (factor)
+    '}'  shift, and go to state 164
 
 
 State 161
 
-   23 block: SCANFF $@8 '(' STR ',' '&' ID $@9 ')' • ';'
+   13 block: WHILE $@2 '(' condition ')' $@3 '{' body • '}'
 
-    ';'  shift, and go to state 164
+    '}'  shift, and go to state 165
 
 
 State 162
+
+   69 factor: LOG '(' value ',' value ')' •
+
+    $default  reduce using rule 69 (factor)
+
+
+State 163
+
+   23 block: SCANFF $@8 '(' STR ',' '&' input $@9 ')' • ';'
+
+    ';'  shift, and go to state 166
+
+
+State 164
 
    17 block: IF $@4 '(' condition ')' $@5 '{' body '}' • $@6 else
 
     $default  reduce using rule 16 ($@6)
 
-    $@6  go to state 165
+    $@6  go to state 167
 
 
-State 163
+State 165
 
    13 block: WHILE $@2 '(' condition ')' $@3 '{' body '}' •
 
     $default  reduce using rule 13 (block)
 
 
-State 164
+State 166
 
-   23 block: SCANFF $@8 '(' STR ',' '&' ID $@9 ')' ';' •
+   23 block: SCANFF $@8 '(' STR ',' '&' input $@9 ')' ';' •
 
     $default  reduce using rule 23 (block)
 
 
-State 165
+State 167
 
    17 block: IF $@4 '(' condition ')' $@5 '{' body '}' $@6 • else
 
-    ELSE  shift, and go to state 166
+    ELSE  shift, and go to state 168
 
-    $default  reduce using rule 38 (else)
+    $default  reduce using rule 40 (else)
 
-    else  go to state 167
-
-
-State 166
-
-   37 else: ELSE • $@11 '{' body '}'
-
-    $default  reduce using rule 36 ($@11)
-
-    $@11  go to state 168
+    else  go to state 169
 
 
-State 167
+State 168
+
+   39 else: ELSE • $@11 '{' body '}'
+
+    $default  reduce using rule 38 ($@11)
+
+    $@11  go to state 170
+
+
+State 169
 
    17 block: IF $@4 '(' condition ')' $@5 '{' body '}' $@6 else •
 
     $default  reduce using rule 17 (block)
 
 
-State 168
+State 170
 
-   37 else: ELSE $@11 • '{' body '}'
+   39 else: ELSE $@11 • '{' body '}'
 
-    '{'  shift, and go to state 169
+    '{'  shift, and go to state 171
 
 
-State 169
+State 171
 
-   37 else: ELSE $@11 '{' • body '}'
+   39 else: ELSE $@11 '{' • body '}'
 
     PRINTFF  shift, and go to state 20
     SCANFF   shift, and go to state 21
@@ -2082,21 +2108,21 @@ State 169
 
     $default  reduce using rule 10 (body)
 
-    body       go to state 170
+    body       go to state 172
     block      go to state 27
     statement  go to state 28
     array      go to state 29
 
 
-State 170
+State 172
 
-   37 else: ELSE $@11 '{' body • '}'
+   39 else: ELSE $@11 '{' body • '}'
 
-    '}'  shift, and go to state 171
+    '}'  shift, and go to state 173
 
 
-State 171
+State 173
 
-   37 else: ELSE $@11 '{' body '}' •
+   39 else: ELSE $@11 '{' body '}' •
 
-    $default  reduce using rule 37 (else)
+    $default  reduce using rule 39 (else)
