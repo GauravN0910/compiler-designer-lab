@@ -1,0 +1,37 @@
+number partition(number argarr, number low, number high){
+    remember number pivot = 0;
+    pivot = argarr[low];
+    remember number k = high;
+    remember number i = high;
+    checktill (i > low) {
+        checkif (argarr[i] > pivot) {
+            remember number temp = 0;
+            temp = argarr[i];
+            argarr[i] = argarr[k];
+            argarr[k] = temp;
+            k = k - 1;
+        }
+        i = i - 1;
+    }
+    remember number newtemp = 0;
+    newtemp = argarr[low];
+    argarr[low] = argarr[k];
+    argarr[k] = newtemp;
+    return k;
+}
+
+boolean quickSort(number sortarr, number low, number high) {
+    checkif (low < high) {
+        remember number idx = 0;
+        idx = partition(sortarr, low, high);
+        quickSort(sortarr, low, idx - 1);
+        quickSort(sortarr, idx + 1, high);
+    }
+}
+
+boolean main() {
+    remember number arr[10];
+    remember number n = 0;
+    take("Enter the number of elements", &n);
+    quickSort(arr, 0, n - 1);    
+}

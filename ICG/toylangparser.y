@@ -23,7 +23,7 @@
         int line_no;
         float value;
     } symbol_table[40];
-
+    char *get_ftype(char *);    
     void insert_type();
     void add(char c);
     void check_return_type(char *);
@@ -40,12 +40,12 @@
     int line_label=0;
 	char buff[100];
 	char errors[10][100];
-	char reserved[15][20] = {"tellme", "take", "checkif", "otherwise", "checktill", "return", "log", "exp", "right", "wrong", "number", "decimal", "letter", "boolean", "main"};
+	char reserved[15][20] = {"tellme", "take", "checkif", "otherwise", "checktill", "return", "log", "exp", "right", "wrong", "number", "decimal", "letter", "boolean"};
     int ic_idx=0;
     int temp_var=0;
     int is_for=0;
     int is_array=0;
-    
+    char currentFuncName[100];
     char icg[1000][1000];
 
     struct node { 
@@ -96,17 +96,25 @@
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
 %type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam
-%type <nd_obj2> init value expression term factor base charbool valcharbool bools array
-%type <nd_obj3> condition
+%type <nd_obj2> init value expression term factor base charbool valcharbool bools array assign
+%type <nd_obj3> condition args typeArgs
 %type <nd_obj4> M
 %define parse.error verbose
 %%
 
-program: entry '(' ')' '{' body return '}' { struct node *main = mknode($5.nd, $6.nd, "main",0); $$.nd = mknode($1.nd, main, "program",0); head = $$.nd; }
-;
 
+program: entry '(' typeArgs ')' {
+	sprintf(icg[ic_idx++], "\nFunction: %s\n", $1.name);
+} '{' body return '}' program { 
+	struct node *main = mknode($7.nd, $8.nd, $1.name,0); 
+	struct node *args = mknode(NULL, $3.nd, "Func-Params",0); 
+	struct node *wrapper = mknode(args, main, "Function",0);
+	$$.nd = mknode( $10.nd, wrapper, "Program",0); 
+	head = $$.nd; 
+} 
+| { $$.nd = NULL; }
 
-entry: datatype ID { add('F');}
+entry: datatype ID { printf("after here\n"); add('F'); strcpy($$.name, $2.name); strcpy(currentFuncName, $2.name); }
 ;
 
 datatype: INT { insert_type();  $$.nd = mknode(NULL, NULL, $1.name,0);}
@@ -163,7 +171,65 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
     sprintf(icg[ic_idx++],"PARAM t%d\n",temp_var-1);
     sprintf(icg[ic_idx++],"PARAM %s\n",$7.name);
     sprintf(icg[ic_idx++],"CALL scanf , 2\n");
-};
+}
+| ID '(' args ')' ';' {
+	printf("%s\n",get_ftype($1.name));
+	if(strcmp( get_ftype($1.name) ,"Function") != 0 ){
+		sprintf(errors[sem_errors], "Line %d: Unpermitted operation on not Function \"%s \"!\n", count+1, $1.name);
+		sem_errors++;	
+	}
+	struct node *args = mknode(NULL, $3.nd, "Func-Params",0); 
+	$$.nd = mknode($1.nd, args, "Func-Call",0);
+	sprintf(icg[ic_idx++], "CALL: %s\n", $1.name);
+}
+;
+
+typeArgs : datatype ID {
+    symbol_table[count].id_name=strdup($2.name);
+    symbol_table[count].data_type=strdup($1.name);
+    symbol_table[count].line_no=line_no;
+    symbol_table[count].type=strdup("Variable");   
+    count++;  
+} ',' typeArgs  { 
+	sprintf(icg[ic_idx++], "\nArg: %s:%s\n", $1.name,$2.name);
+	char temp[50]; 
+	sprintf(temp, "%s:%s", $1.name,$2.name);
+	struct node *tempNode = mknode(NULL,NULL,temp,0); 
+	$$.nd = mknode(tempNode, $5.nd, "args",0); 
+}
+| datatype ID  { 
+    symbol_table[count].id_name=strdup($2.name);
+    symbol_table[count].data_type=strdup($1.name);
+    symbol_table[count].line_no=line_no;
+    symbol_table[count].type=strdup("Variable");   
+    count++;
+	sprintf(icg[ic_idx++], "\Arg: %s:%s\n", $1.name,$2.name);
+	char temp[50]; 
+	sprintf(temp, "%s:%s", $1.name,$2.name);
+	$$.nd = mknode(NULL,NULL,temp,0); 
+}
+| { $$.nd = NULL; }
+;
+
+args : expression ',' args { 
+	sprintf(icg[ic_idx++], "PARAM: %s\n", $1.name); 
+	$$.nd = mknode($1.nd, $3.nd, "args",0); 
+}
+| value ',' args { 
+	sprintf(icg[ic_idx++], "PARAM: %s\n", $1.name); 
+	$$.nd = mknode($1.nd, $3.nd, "args",0); 
+}
+| expression { 
+	sprintf(icg[ic_idx++], "PARAM: %s\n", $1.name); 
+	$$.nd = $1.nd; 
+} 
+| value { 
+	sprintf(icg[ic_idx++], "PARAM: %s\n", $1.name); 
+	char temp[50]; sprintf(temp, "%s", $1.name);
+	$$.nd = mknode(NULL,NULL,temp,0); 
+}
+| { $$.nd = NULL; }
+;
 
 printparam: valcharbool { 
     $$.nd = $1.nd;  
@@ -295,28 +361,59 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
             sprintf(icg[ic_idx++], "%s = int %s\n",$3.name,$5.name);
         }
     } 
-| ID { check_declaration($1.name); } '=' expression {
-        char *id_type = get_type($1.name);
-        if(id_type!=NULL && strcmp(id_type,$4.type)){
-            success=0;
-            sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $1.name);
-            sem_errors++;
+| ID { check_declaration($1.name); } '=' assign {
+        if(is_array == 0){
+            char *id_type = get_type($1.name);
+            if(id_type!=NULL && strcmp(id_type,$4.type)){
+                success=0;
+                sprintf(errors[sem_errors], "Line %d: Variable \"%s\" has a different type than expected!\n", line_no, $1.name);
+                sem_errors++;
+            }
+            $1.nd = mknode(NULL, NULL, $1.name,0); 
+            $$.nd = mknode($1.nd, $4.nd, "=",0); 
+            $1.value = $4.value;
+            $1.nd->value = $4.value;
+            set_value($1.name, $4.value);
+            sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
         }
-        $1.nd = mknode(NULL, NULL, $1.name,0); 
-        $$.nd = mknode($1.nd, $4.nd, "=",0); 
-        $1.value = $4.value;
-        $1.nd->value = $4.value;
-        set_value($1.name, $4.value);
-        sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
+        else{
+            is_array = 0;
+            $$.nd = mknode($1.nd,$4.nd,"=",0);
+            sprintf(icg[ic_idx++],"%s = u%d\n", $1.name,$4.temp_arr_var);
+        }
     }
 | ID { check_declaration($1.name); } relop expression { $1.nd = mknode(NULL, NULL, $1.name,0); $$.nd = mknode($1.nd, $4.nd, $3.name,0); }
-
+| array '=' expression {
+    is_array=0;
+    $$.nd = mknode($1.nd,$3.nd,"=",0);
+    sprintf(icg[ic_idx++],"u%d = %s\n", $1.temp_arr_var, $3.name);
+}
+| array '=' array {
+    is_array = 0;
+    $$.nd = mknode($1.nd,$3.nd,"=",0);
+    sprintf(icg[ic_idx++],"u%d = u%d\n", $1.temp_arr_var,$3.temp_arr_var);
+}
 ;
+
+assign: expression {
+    strcpy($$.type,$1.type);
+    $$.nd = $1.nd;
+    $$.value = $1.value;
+}
+| array {
+    $$.nd = $1.nd;
+    $$.temp_arr_var = $1.temp_arr_var;
+}
+| ID '(' args ')' {
+    strcpy($$.type,"number");
+    $$.nd = mknode($1.nd,$3.nd,"call",0);
+    $$.value = 0;
+}
 
 init: '=' charbool  { $$.nd = $2.nd; strcpy($$.type,$2.type); $$.value = $2.value; $$.nd->value = $2.value; }
 | '=' expression { $$.nd = $2.nd; strcpy($$.type,$2.type); strcpy($$.name,$2.name); $$.value = $2.value; $$.nd->value = $2.value; }
 | '[' NUMBER ']' { 
-    char temp[100];
+    char temp[100] = "";
     char gomma[2];
     char gomma1[2];
     sprintf(gomma,"[");
@@ -436,7 +533,7 @@ value: NUMBER {
 | array { $$.nd = $1.nd; strcpy($$.type,$1.type); strcpy($$.name,$1.name); $$.temp_arr_var = $1.temp_arr_var; }
 ;
 
-array: ID '[' NUMBER ']' { 
+array: ID '[' expression ']' { 
     check_declaration($1.name);
     char *id_type = get_type($1.name);
     if(id_type!=NULL) strcpy($$.type,id_type); 
@@ -534,7 +631,7 @@ int check_types(char *type1, char *type2){
 }
 
 void check_return_type(char *value) {
-	char *main_datatype = get_type("main");
+	char *main_datatype = get_type(currentFuncName);
 	if(strcmp(main_datatype, value)) {
 		sprintf(errors[sem_errors], "Line %d: Return type mismatch\n", line_no);
 		sem_errors++;
@@ -566,6 +663,15 @@ void set_value(char *var, float value){
             return;
         }
     }
+}
+
+char *get_ftype(char *var){
+	for(int i=0; i<count; i++) {
+		// Handle case of use before declaration
+		if(!strcmp(symbol_table[i].id_name, var)) {
+			return symbol_table[i].type;
+		}
+	}
 }
 
 int search(char *type) { 

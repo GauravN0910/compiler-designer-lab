@@ -4,8 +4,8 @@
 lex toylanglex.l
 
 yacc -v -d toylangparser.y
-gcc y.tab.c -lm
+gcc y.tab.c -lm 
 
 
-./a.out<input.txt
+./a.out<input2.txt
 
