@@ -44,6 +44,7 @@
     int ic_idx=0;
     int temp_var=0;
     int is_for=0;
+    int is_array=0;
     
     char icg[1000][1000];
 
@@ -54,6 +55,7 @@
         float value;
     };
     int success = 1;
+    int temp_arr_var = 0;
 %}
 
 %union { 
@@ -66,7 +68,8 @@
     struct var_name2 { 
         char name[100]; 
         struct node* nd;
-        char type[5];
+        int temp_arr_var;
+        char type[10];
         float value;
     } nd_obj2; 
 
@@ -76,6 +79,7 @@
         char type[10];
         char if_body[5];
         char else_body[5];
+        int temp_arr_var;
         char after_else_body[5];
         int tlist[10];
         int tlistsize;
@@ -92,7 +96,7 @@
 
 %token <nd_obj> PRINTFF SCANFF IF ELSE WHILE RETURN DECLARE ADD SUBTRACT MULTIPLY DIVIDE LOG POW GTE LTE GT LT EQ NE TRUE FALSE AND OR INT FLOAT CHAR BOOL NUMBER FLOAT_NUM ID STR CHARACTER
 %type <nd_obj> program entry datatype body block else statement exponent mulops addops relop return printparam
-%type <nd_obj2> init value expression term factor base charbool valcharbool bools
+%type <nd_obj2> init value expression term factor base charbool valcharbool bools array
 %type <nd_obj3> condition
 %type <nd_obj4> M
 %define parse.error verbose
@@ -124,7 +128,6 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
     }
 } '{' body '}' { 
     $$.nd = mknode($4.nd, $8.nd, $1.name,0);
-    printf("bro label is %d\n",$4.label_for_while_start);
     sprintf(icg[ic_idx++], "JUMP TO L%d\n", $4.label_for_while_start);
     for(int i=0;i<$4.flistsize;i++){
         char gotha[20];
@@ -134,14 +137,6 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
 	sprintf(icg[ic_idx++], "LABEL L%d:\n",label++);
 }
 | IF {add('K'); is_for =0;} '(' condition ')' { 
-    printf("tlist is : \n");
-    for(int i=0;i<$4.tlistsize;i++){
-        printf("%d\n",$4.tlist[i]);
-    }
-    printf("flist is : \n");
-    for(int i=0;i<$4.flistsize;i++){
-        printf("%d\n",$4.flist[i]);
-    }
     sprintf(icg[ic_idx++], "LABEL L%d:\n", label++); 
     for(int i=0;i<$4.tlistsize;i++){
         char gotha[20];
@@ -149,8 +144,6 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
         strcat(icg[$4.tlist[i]], gotha);
     }
 } '{' body '}' {  
-    // sprintf(icg[ic_idx++], "\nJUMP to %s\n", $4.after_else_body);
-    // sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
     sprintf(icg[ic_idx++],"JUMP TO L%d\n", label+1);
     sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
     for(int i=0;i<$4.flistsize;i++){
@@ -162,11 +155,15 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
         struct node *iff = mknode($4.nd, $8.nd, $1.name,0); 
         $$.nd = mknode(iff, $11.nd, "if-else-block",0); 
         sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
-        // sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.after_else_body);
     }
 | statement ';' { $$.nd = $1.nd; }
 | PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
-| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);};
+| SCANFF {add('K');} '(' STR ',' '&' ID { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);
+    sprintf(icg[ic_idx++],"t%d = %s\n",temp_var++,$4.name);
+    sprintf(icg[ic_idx++],"PARAM t%d\n",temp_var-1);
+    sprintf(icg[ic_idx++],"PARAM %s\n",$7.name);
+    sprintf(icg[ic_idx++],"CALL scanf , 2\n");
+};
 
 printparam: valcharbool { 
     $$.nd = $1.nd;  
@@ -196,7 +193,6 @@ condition: condition AND M condition {
         char chumma2[100];
         sprintf(chumma2,"GOTO S");
         strcat(chumma2,chumma);
-        printf("%s\n",chumma2);
         strcat(icg[$1.tlist[i]], chumma2);
     }
     $$.tlistsize = 0;
@@ -217,11 +213,9 @@ condition: condition AND M condition {
     for (int i = 0; i < $1.flistsize; i++) {
         char chumma[10];
         sprintf(chumma, "%d\n", $3.next_quad);
-        printf("chumma %s\n",chumma);
         char chumma2[100];
         sprintf(chumma2,"GOTO S");
         strcat(chumma2,chumma);
-        printf("%s\n",chumma2);
         strcat(icg[$1.flist[i]], chumma2);
     }
     $$.tlistsize = 0;
@@ -251,7 +245,13 @@ condition: condition AND M condition {
         sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
         is_for=0;
     }
-    sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
+    if(is_array==0){
+        sprintf(ifstt, "if %s %s %s \n", $1.name, $2.name, $3.name);
+    }
+    else{
+        sprintf(ifstt,"if u%d %s u%d\n",$1.temp_arr_var,$2.name,$3.temp_arr_var);
+        is_array = 0;
+    }
     strcat(icg[ic_idx++], ifstt);
     $$.tlistsize = 0;
     $$.flistsize = 0;
@@ -287,7 +287,13 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
         $3.value = $5.value;
         $3.nd->value = $5.value;
         set_value($3.name, $5.value);
-        sprintf(icg[ic_idx++], "%s = %s\n", $3.name, $5.name);
+        if(is_array==0){
+            sprintf(icg[ic_idx++], "%s = %s\n", $3.name, $5.name);
+        }
+        else{
+            is_array=0;
+            sprintf(icg[ic_idx++], "%s = int %s\n",$3.name,$5.name);
+        }
     } 
 | ID { check_declaration($1.name); } '=' expression {
         char *id_type = get_type($1.name);
@@ -304,10 +310,25 @@ statement: DECLARE datatype ID { add('V'); } init { $3.nd = mknode(NULL, NULL, $
         sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
     }
 | ID { check_declaration($1.name); } relop expression { $1.nd = mknode(NULL, NULL, $1.name,0); $$.nd = mknode($1.nd, $4.nd, $3.name,0); }
+
 ;
 
 init: '=' charbool  { $$.nd = $2.nd; strcpy($$.type,$2.type); $$.value = $2.value; $$.nd->value = $2.value; }
 | '=' expression { $$.nd = $2.nd; strcpy($$.type,$2.type); strcpy($$.name,$2.name); $$.value = $2.value; $$.nd->value = $2.value; }
+| '[' NUMBER ']' { 
+    char temp[100];
+    char gomma[2];
+    char gomma1[2];
+    sprintf(gomma,"[");
+    sprintf(gomma1,"]");
+    strcat(temp,gomma);
+    strcat(temp,$2.name);
+    strcat(temp,gomma1);
+    strcpy($$.name,temp);
+    $$.nd = mknode(NULL, NULL, $$.name,0);
+    sprintf($$.type,"number");
+    is_array=1;
+}
 ;
 
 
@@ -412,13 +433,31 @@ value: NUMBER {
         $$.nd->value = $$.value;
     }
     }
+| array { $$.nd = $1.nd; strcpy($$.type,$1.type); strcpy($$.name,$1.name); $$.temp_arr_var = $1.temp_arr_var; }
 ;
+
+array: ID '[' NUMBER ']' { 
+    check_declaration($1.name);
+    char *id_type = get_type($1.name);
+    if(id_type!=NULL) strcpy($$.type,id_type); 
+    char temp[100] = "";
+    strcat(temp, $1.name);
+    strcat(temp, "[");
+    strcat(temp, $3.name);
+    strcat(temp, "]");
+    strcpy($$.name, temp);
+    $$.nd = mknode(NULL, NULL, $$.name,0); 
+    is_array = 1;
+    $$.temp_arr_var = temp_arr_var++;
+    sprintf(icg[ic_idx++],"t%d = 4 * %s\n",temp_var++,$3.name);
+    sprintf(icg[ic_idx++],"u%d = %s[t%d]\n",$$.temp_arr_var,$1.name,temp_var-1);
+}
 
 charbool: bools { $$.nd = $1.nd; strcpy($$.type,"boolean");  }
 | CHARACTER { add('C'); $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,"letter"); }
 ;
 
-valcharbool: value { $$.nd = $1.nd; strcpy($$.type,$1.type); }
+valcharbool: value { $$.nd = $1.nd; strcpy($$.type,$1.type); strcpy($$.name,$1.name); $$.temp_arr_var = $1.temp_arr_var; }
 | charbool { $$.nd = mknode(NULL, NULL, $1.name,0); strcpy($$.type,$1.type); }
 ;
 

@@ -2,15 +2,12 @@ boolean main(){
     remember number y = 5;
     remember decimal x = 10.7;
     remember number k = 2 + 4 + 6;
-    checkif ((x > 5.0 || x > 10.0) && x < 20.0) {
-        tellme("x is greater than y");
-    }
-    otherwise {
-        tellme("y is greater than x");
-    }
-    checktill ( (x >= 0.5 || x<=10.0) && x > 20.0) {
+    remember number chumma[10];
+    checkif( chumma[0] > chumma[1] ){
         tellme(x);
-        x = x + 1.0 * 4.0;
+    }
+    checkif( x > 3.2 ){
+        tellme(x);
     }
     take("Enter a number: ", &y);
     remember number z = 3 exp 4;
