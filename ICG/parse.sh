@@ -9,3 +9,5 @@ gcc y.tab.c -lm
 
 ./a.out<input2.txt
 
+python3 optimize.py
+

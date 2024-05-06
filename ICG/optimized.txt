@@ -1,0 +1,219 @@
+Arg: number:high
+
+
+Arg: number:low
+
+
+Arg: number:argarr
+
+
+Function: partition
+
+
+
+t0 = 4 * low
+
+u0 = argarr[t0]
+
+pivot = u0
+
+k = high
+
+i = high
+
+LABEL L0:
+
+if i > low
+GOTO L1
+
+GOTO L5
+
+LABEL L1:
+
+
+
+u1 = argarr[t1]
+
+if u1 > u0
+GOTO L2
+
+GOTO L3
+
+LABEL L2:
+
+
+
+
+
+u2 = argarr[t2]
+
+temp = u2
+
+
+
+u3 = argarr[t3]
+
+t4 = 4 * k
+
+u4 = argarr[t4]
+
+u3 = u4
+
+t5 = 4 * k
+
+u5 = argarr[t5]
+
+u5 = 0
+
+t6 = k - 1
+
+k = t6
+
+JUMP TO L4
+
+LABEL L3:
+
+LABEL L4:
+
+
+
+i = 76
+
+JUMP TO L0
+
+LABEL L5:
+
+
+
+t8 = 4 * low
+
+u6 = argarr[t8]
+
+newtemp = u6
+
+t9 = 4 * low
+
+u7 = argarr[t9]
+
+t10 = 4 * k
+
+u8 = argarr[t10]
+
+u7 = u8
+
+t11 = 4 * k
+
+u9 = argarr[t11]
+
+u9 = 0
+
+Arg: number:high
+
+
+Arg: number:low
+
+
+Arg: number:sortarr
+
+
+Function: quickSort
+
+if low < high
+GOTO L6
+
+GOTO L7
+
+LABEL L6:
+
+idx = 0
+
+PARAM: high
+
+PARAM: low
+
+PARAM: sortarr
+
+idx = partition
+
+t12 = idx - 1
+
+PARAM: t12
+
+PARAM: low
+
+PARAM: sortarr
+
+CALL: quickSort
+
+t13 = idx + 1
+
+PARAM: high
+
+PARAM: t13
+
+PARAM: sortarr
+
+CALL: quickSort
+
+JUMP TO L8
+
+LABEL L7:
+
+LABEL L8:
+
+
+Function: main
+
+arr = int [10]
+
+n = 0
+
+t14 = Enter the number of elements
+
+PARAM t14
+
+PARAM n
+
+CALL scanf , 2
+
+
+
+LABEL L9:
+
+if counter < n
+GOTO L10
+
+GOTO L11
+
+LABEL L10:
+
+
+
+u10 = arr[t15]
+
+t16 = Enter value
+
+PARAM t16
+
+PARAM u10
+
+CALL scanf , 2
+
+
+
+counter = 1
+
+JUMP TO L9
+
+LABEL L11:
+
+t18 = n - 1
+
+PARAM: t18
+
+PARAM: 0
+
+PARAM: arr
+
+CALL: quickSort
+

@@ -166,7 +166,7 @@ block: WHILE {add('K'); is_for=1; } '(' condition ')' {
     }
 | statement ';' { $$.nd = $1.nd; }
 | PRINTFF { add('K'); } '(' printparam ')' ';' { $$.nd = mknode($4.nd, NULL, $1.name,0); sprintf(icg[ic_idx++], "\nCALL print, 1 \n"); }
-| SCANFF {add('K');} '(' STR ',' '&' input { check_declaration($7.name); } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);
+| SCANFF {add('K');} '(' STR ',' '&' input { ; } ')' ';' { struct node* n1 = mknode(NULL,NULL,$4.name,0); struct node* n2 = mknode(NULL,NULL,$7.name,0); $$.nd = mknode(n1,n2,$1.name,0);
     sprintf(icg[ic_idx++],"t%d = %s\n",temp_var++,$4.name);
     sprintf(icg[ic_idx++],"PARAM t%d\n",temp_var-1);
     sprintf(icg[ic_idx++],"PARAM %s\n",$7.name);
@@ -542,7 +542,6 @@ value: NUMBER {
 ;
 
 array: ID '[' expression ']' { 
-    check_declaration($1.name);
     char *id_type = get_type($1.name);
     if(id_type!=NULL) strcpy($$.type,id_type); 
     char temp[100] = "";
@@ -614,9 +613,15 @@ int main() {
 
     printf("\n\n");
 	printf("INTERMEDIATE CODE GENERATION \n\n");
+
+    FILE *file = fopen("icg.txt","w");
+
 	for(int i=0; i<ic_idx; i++){
 		printf("%s",icg[i]);
+        fprintf(file,"%s\n",icg[i]);
 	}
+
+    fclose(file);
 	printf("\n\n");
 
 
